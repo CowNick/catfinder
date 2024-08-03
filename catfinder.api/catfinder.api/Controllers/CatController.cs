@@ -1,19 +1,21 @@
+using catfinder.api.cat.Interface;
+using catfinder.api.cat.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace catfinder.api.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
-	public class WeatherForecastController : ControllerBase
+	public class CatController : ControllerBase
 	{
 		private static readonly string[] Summaries = new[]
 		{
 			"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 		};
 
-		private readonly ILogger<WeatherForecastController> _logger;
+		private readonly ILogger<CatController> _logger;
 
-		public WeatherForecastController(ILogger<WeatherForecastController> logger)
+		public CatController(ILogger<CatController> logger, ICatService catService)
 		{
 			_logger = logger;
 		}
