@@ -20,13 +20,11 @@ a,
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-  }
+ body {
+   display: flex;
+ }
 
-  #app {
-    display: grid;
-    grid-template-rows: auto 1fr;
-  }
-}
+ #app {
+   display: grid;
+   grid-template-rows: auto 1fr;
+ }
