@@ -1,35 +1,29 @@
+using Asp.Versioning;
 using catfinder.api.cat.Interface;
-using catfinder.api.cat.Service;
+using catfinder.api.orm.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace catfinder.api.Controllers
 {
 	[ApiController]
-	[Route("[controller]")]
+	[Route("api/Cats")]
+	[ApiVersion("1.0", Deprecated = true)]
 	public class CatController : ControllerBase
 	{
-		private static readonly string[] Summaries = new[]
-		{
-			"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-		};
-
 		private readonly ILogger<CatController> _logger;
+
+		private readonly ICatService _catService;
 
 		public CatController(ILogger<CatController> logger, ICatService catService)
 		{
 			_logger = logger;
+			_catService = catService;
 		}
 
-		[HttpGet(Name = "GetWeatherForecast")]
-		public IEnumerable<WeatherForecast> Get()
+		[HttpGet]
+		public async Task<Cat?> GetAsync(string name)
 		{
-			return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-			{
-				Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-				TemperatureC = Random.Shared.Next(-20, 55),
-				Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-			})
-			.ToArray();
+			return await _catService.GetCatAsync(name);
 		}
 	}
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using catfinder.api.orm.Entities;
 
 namespace catfinder.api.cat.Interface
 {
 	public interface ICatService
 	{
+		Task<Cat?> GetCatAsync(string name);
 	}
 }

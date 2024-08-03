@@ -5,13 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run copy && vue-cli-service build",
+    "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build --force",
-    "serve": "npm run copy && vue-cli-service serve",
-    "copy": "ncp node_modules/@arcgis/core/assets public/assets"
+    "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
     "@arcgis/core": "^4.30.9",

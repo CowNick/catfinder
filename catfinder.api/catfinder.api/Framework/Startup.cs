@@ -43,6 +43,17 @@ namespace catfinder.api.Framework
 		{
 			var services = context.Services;
 
+			context.Services.AddAbpApiVersioning(options =>
+			{
+				options.ReportApiVersions = true;
+				options.AssumeDefaultVersionWhenUnspecified = true;
+			});
+
+			Configure<AbpAspNetCoreMvcOptions>(options =>
+			{
+				options.ChangeControllerModelApiExplorerGroupName = false;
+			});
+
 			services.AddControllers();
 			services.AddEndpointsApiExplorer();
 			services.AddSwaggerGen();
