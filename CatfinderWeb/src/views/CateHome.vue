@@ -7,7 +7,7 @@
 	import MapView from "@arcgis/core/Views/MapView"
 	import { onMounted, ref } from "vue"
 
-	const mapContainer = ref<HTMLDivElement | null>(null);
+	const mapContainer = ref<HTMLDivElement>();
 
 	onMounted(() =>{
 		const map = new Map({
