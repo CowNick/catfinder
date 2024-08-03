@@ -1,0 +1,8 @@
+# Visual Studio Paths and Files
+packages/
+bin/
+obj/
+*.suo
+*.csproj.user
+.nuget/
+.vs/

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\Nick\.nuget\packages\volo.abp.aspnetcore.mvc\8.2.1\contentFiles\any\net8.0\Volo.Abp.AspNetCore.Mvc.abppkg.analyze.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Abp.AspNetCore" Version="9.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="8.2.1" />
+    <PackageReference Include="Volo.Abp.Autofac" Version="8.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\catfinder.api.cat\catfinder.api.cat.csproj" />
+  </ItemGroup>
+
+</Project>
