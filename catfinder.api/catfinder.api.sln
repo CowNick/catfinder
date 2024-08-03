@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catfinder.api", "catfinder.api\catfinder.api.csproj", "{0CE942D1-A8B5-4F6E-8AF4-F00E4ED2D3B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catfinder.api.orm", "catfinder.api.orm\catfinder.api.orm.csproj", "{EB0CC27C-B16B-4D2B-B736-513DB5711BE3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catfinder.api.image", "catfinder.api.picture\catfinder.api.image.csproj", "{F13955AB-EF93-4100-B395-0CC46AB71BA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catfinder.api.user", "catfinder.api.user\catfinder.api.user.csproj", "{BDEF98C6-CF16-43B2-AC0B-A23E70F27824}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catfinder.api.cat", "catfinder.api.cat\catfinder.api.cat.csproj", "{893B11C2-2DCC-4649-B4EB-77DDDC3FA5A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "catfinder.api.console", "catfinder.api.console\catfinder.api.console.csproj", "{C9C9F68E-3E51-4C7A-8810-99A0B46A3647}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CE942D1-A8B5-4F6E-8AF4-F00E4ED2D3B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE942D1-A8B5-4F6E-8AF4-F00E4ED2D3B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE942D1-A8B5-4F6E-8AF4-F00E4ED2D3B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE942D1-A8B5-4F6E-8AF4-F00E4ED2D3B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB0CC27C-B16B-4D2B-B736-513DB5711BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB0CC27C-B16B-4D2B-B736-513DB5711BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB0CC27C-B16B-4D2B-B736-513DB5711BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB0CC27C-B16B-4D2B-B736-513DB5711BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F13955AB-EF93-4100-B395-0CC46AB71BA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F13955AB-EF93-4100-B395-0CC46AB71BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F13955AB-EF93-4100-B395-0CC46AB71BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F13955AB-EF93-4100-B395-0CC46AB71BA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDEF98C6-CF16-43B2-AC0B-A23E70F27824}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDEF98C6-CF16-43B2-AC0B-A23E70F27824}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDEF98C6-CF16-43B2-AC0B-A23E70F27824}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDEF98C6-CF16-43B2-AC0B-A23E70F27824}.Release|Any CPU.Build.0 = Release|Any CPU
+		{893B11C2-2DCC-4649-B4EB-77DDDC3FA5A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{893B11C2-2DCC-4649-B4EB-77DDDC3FA5A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{893B11C2-2DCC-4649-B4EB-77DDDC3FA5A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{893B11C2-2DCC-4649-B4EB-77DDDC3FA5A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9C9F68E-3E51-4C7A-8810-99A0B46A3647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9C9F68E-3E51-4C7A-8810-99A0B46A3647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9C9F68E-3E51-4C7A-8810-99A0B46A3647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9C9F68E-3E51-4C7A-8810-99A0B46A3647}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C666FAE-6337-4FDB-9FD9-7CE136978062}
+	EndGlobalSection
+EndGlobal
