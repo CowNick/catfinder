@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import CateHome from '@/components/CateHome.vue'
+import CateHome from '@/views/CateHome.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
