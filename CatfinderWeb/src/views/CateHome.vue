@@ -5,17 +5,26 @@
 <script setup lang="ts">
 	import Map from "@arcgis/core/Map"
 	import MapView from "@arcgis/core/Views/MapView"
+	import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 	import { onMounted, ref } from "vue"
 
 	const mapContainer = ref<HTMLDivElement>();
-
 	onMounted(() =>{
 		const map = new Map({
-			basemap:'streets-vector'});
+			basemap: {
+				title: "Open Streets Map",
+				id: "OpenStreetMap",
+				thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg?f=json",
+				baseLayers: [
+					new VectorTileLayer({
+						url: "https://basemaps.arcgis.com/arcgis/rest/services/OpenStreetMap_v2/VectorTileServer" 
+					})]
+			}
+		});
 		const view = new MapView({
 			container: mapContainer.value,
 			map: map,
-			center: [-118.49178, 34.01185],
+			center: import.meta.env.APP_SHANGHAI_CENTER_POINT.split(',').map(n => parseFloat(n)),
 			zoom: 15,
 		});
 	});

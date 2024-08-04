@@ -1,0 +1,28 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0" version="24.7.6">
+  <diagram name="Page-1" id="NTci2zjAOPUxK90D50eq">
+    <mxGraphModel dx="3130" dy="824" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="UZjuZ-FUdFmY1X8hekNM-1" value="" style="verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;strokeWidth=1;shape=mxgraph.mockup.misc.map;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="210" width="460" height="710" as="geometry" />
+        </mxCell>
+        <mxCell id="UZjuZ-FUdFmY1X8hekNM-2" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="165" y="220" width="395" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UZjuZ-FUdFmY1X8hekNM-4" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#0080F0;shadow=0;dashed=0;shape=mxgraph.ios7.icons.camera;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="-1160" y="160" width="30" height="17.4" as="geometry" />
+        </mxCell>
+        <mxCell id="UZjuZ-FUdFmY1X8hekNM-9" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn4.iconfinder.com/data/icons/evil-icons-user-interface/64/menu-128.png;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="218.7" width="32.6" height="32.6" as="geometry" />
+        </mxCell>
+        <mxCell id="UZjuZ-FUdFmY1X8hekNM-10" value="" style="shape=mxgraph.signs.tech.camera_2;html=1;pointerEvents=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="523.37" y="223.7" width="29.29" height="21.3" as="geometry" />
+        </mxCell>
+        <mxCell id="UZjuZ-FUdFmY1X8hekNM-13" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn2.iconfinder.com/data/icons/boxicons-solid-vol-1/24/bxs-cat-128.png;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="169" y="220.3" width="30" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

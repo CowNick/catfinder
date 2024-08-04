@@ -12,8 +12,9 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
-    "@arcgis/core": "^4.30.9",
-    "ncp": "^2.0.0",
+    "@arcgis/core": "^4.30.8",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "material-icons": "^1.13.12",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
