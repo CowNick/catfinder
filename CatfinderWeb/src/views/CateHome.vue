@@ -13,6 +13,7 @@
 	import { onMounted, ref } from "vue"
 
 	const mapContainer = ref<HTMLDivElement>();
+	let mapView : MapView | null = null;
 	onMounted(() =>{
 		const map = new Map({
 			basemap: {
@@ -25,14 +26,13 @@
 					})]
 			}
 		});
-		const view = new MapView({
+		mapView = new MapView({
 			container: mapContainer.value,
 			map: map,
 			center: import.meta.env.APP_SHANGHAI_CENTER_POINT.split(',').map(n => parseFloat(n)),
 			zoom: 15,
 		});
 	});
-
 
 	function applySearch(keywords: string)
 	{
