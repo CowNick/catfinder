@@ -1,5 +1,6 @@
-import './assets/main.css'
+import './assets/main.less'
 import '@arcgis/core/assets/esri/themes/light/main.css'
+import './assets/esri-override.less'
 import 'material-icons/iconfont/material-icons.css'
 
 import { createApp } from 'vue'

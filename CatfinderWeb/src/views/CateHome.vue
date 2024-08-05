@@ -1,8 +1,12 @@
-<template>
+<template>	
+	<SearchBar></SearchBar>
+	<NavBar></NavBar>
 	<div class="map-container" ref="mapContainer">
 	</div>
 </template>
 <script setup lang="ts">
+	import SearchBar from "@/components/SearchBar.vue"
+	import NavBar from "@/components/NavBar.vue"
 	import Map from "@arcgis/core/Map"
 	import MapView from "@arcgis/core/Views/MapView"
 	import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
