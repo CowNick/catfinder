@@ -1,5 +1,5 @@
 <template>	
-	<SearchBar></SearchBar>
+	<SearchBar @search="applySearch"></SearchBar>
 	<NavBar></NavBar>
 	<div class="map-container" ref="mapContainer">
 	</div>
@@ -32,6 +32,12 @@
 			zoom: 15,
 		});
 	});
+
+
+	function applySearch(keywords: string)
+	{
+		console.log(keywords);
+	}
 </script>
 <style lang="less" scoped>
 	.map-container

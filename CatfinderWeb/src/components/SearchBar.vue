@@ -1,14 +1,39 @@
 <template>
 <div class="search-bar">
 	<div class="input-box">
-		<div class="switch"><i class="material-icons-round">not_listed_location</i></div>
-		<div><input type="input"></div>
-		<div class="search-btn"><i class="material-icons-round">route</i></div>
+		<div class="switch" @click="switchSearchType">
+			<template v-if="searchType === 'address'">
+				<i class="material-icons-round icon">not_listed_location</i>
+			</template>
+			<template v-if="searchType === 'cat'">
+				<font-awesome-icon icon="cat" class="icon" />
+			</template>
+		</div>
+	<div><input type="input" v-model="keyword"></div>
+	<div class="search-btn" @click="$emit('search', keyword)"><i class="material-icons-round icon">route</i></div>
 	</div>
 </div>
 </template>
 <script lang="ts" setup>
+	import { ref, defineEmits } from 'vue';
 
+	const emit = defineEmits<{
+		search: [keywords: string]
+	}>()
+
+	const keyword  = ref("");
+	const searchType = ref("address");
+	function switchSearchType()
+	{
+		if(searchType.value === "address")
+		{
+			searchType.value = "cat";
+		}
+		else
+		{
+			searchType.value = "address";
+		}
+	}
 </script>
 <style lang="less" scoped>
 	.search-bar
@@ -32,7 +57,7 @@
 				height: 38px;
 				background-color: aliceblue;
 				border-radius: 5px;
-				i
+				.icon
 				{
 					font-size: 36px;
 					line-height: 38px;
