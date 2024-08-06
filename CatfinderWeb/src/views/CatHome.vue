@@ -1,4 +1,4 @@
-<template>	
+<template>
 	<SearchBar @search="applySearch"></SearchBar>
 	<NavBar></NavBar>
 	<div class="map-container" ref="mapContainer">
