@@ -7,31 +7,13 @@
 <script setup lang="ts">
 	import SearchBar from "@/components/SearchBar.vue"
 	import NavBar from "@/components/NavBar.vue"
-	import Map from "@arcgis/core/Map"
-	import MapView from "@arcgis/core/Views/MapView"
-	import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
+	import { RoutingMap } from "@/map/RoutingMap";
 	import { onMounted, ref } from "vue"
 
 	const mapContainer = ref<HTMLDivElement>();
-	let mapView : MapView | null = null;
+	const routingMap = new RoutingMap();
 	onMounted(() =>{
-		const map = new Map({
-			basemap: {
-				title: "Open Streets Map",
-				id: "OpenStreetMap",
-				thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg?f=json",
-				baseLayers: [
-					new VectorTileLayer({
-						url: "https://basemaps.arcgis.com/arcgis/rest/services/OpenStreetMap_v2/VectorTileServer" 
-					})]
-			}
-		});
-		mapView = new MapView({
-			container: mapContainer.value,
-			map: map,
-			center: import.meta.env.APP_SHANGHAI_CENTER_POINT.split(',').map(n => parseFloat(n)),
-			zoom: 15,
-		});
+		routingMap.createMapView(mapContainer.value as HTMLDivElement);
 	});
 
 	function applySearch(keywords: string)
