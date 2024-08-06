@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using catfinder.api.cat.DTO;
 
 namespace catfinder.api.cat.Interface
 {
 	public interface ICatPictureService
 	{
+		Task<CatDTO> UploadAsync(Stream[] files, CatDTO cat);
 
+		Task<CatPictureDTO[]> SearchAsync(string path);
 	}
 }

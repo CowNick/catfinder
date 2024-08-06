@@ -1,9 +1,11 @@
-﻿using catfinder.api.orm.Entities;
+﻿using catfinder.api.cat.DTO;
 
 namespace catfinder.api.cat.Interface
 {
 	public interface ICatService
 	{
-		Task<Cat?> GetCatAsync(string name);
+		Task<CatDTO[]> GetCatByTextAsync(string text);
+
+		Task<CatDTO[]> GetCatAsync();
 	}
 }

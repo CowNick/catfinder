@@ -36,6 +36,8 @@ public partial class CatDBContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Tags).HasMaxLength(200);
+            entity.Property(e => e.Type).HasMaxLength(20);
             entity.Property(e => e.Xcoord)
                 .HasColumnType("decimal(9, 6)")
                 .HasColumnName("XCoord");

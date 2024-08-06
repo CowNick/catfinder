@@ -1,6 +1,6 @@
 using Asp.Versioning;
+using catfinder.api.cat.DTO;
 using catfinder.api.cat.Interface;
-using catfinder.api.orm.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace catfinder.api.Controllers
@@ -21,9 +21,14 @@ namespace catfinder.api.Controllers
 		}
 
 		[HttpGet]
-		public async Task<Cat?> GetAsync(string name)
+		public async Task<CatDTO[]> GetAsync(string? text = null)
 		{
-			return await _catService.GetCatAsync(name);
+			if (text == null) 
+			{
+				return await _catService.GetCatAsync();
+			}
+
+			return await _catService.GetCatByTextAsync(text);
 		}
 	}
 }

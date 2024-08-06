@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Text;
 
-namespace catfinder.api.picture
+namespace catfinder.api.picture.Utils
 {
 	public static class ImageSimilarityUtil
 	{

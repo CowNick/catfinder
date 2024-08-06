@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using catfinder.api.picture;
+using catfinder.api.picture.Utils;
 
 var y1 = ImageSimilarityUtil.ProduceFinger(@"D:\GIS Training\FinallyData\TestImage\1.jpg");
 var y2 = ImageSimilarityUtil.ProduceFinger(@"D:\GIS Training\FinallyData\TestImage\2.jpg");

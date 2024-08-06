@@ -9,7 +9,7 @@ public partial class CatPicture
 
     public int? CatId { get; set; }
 
-    public string? Path { get; set; }
+    public string Path { get; set; } = null!;
 
     public decimal? Xcoord { get; set; }
 

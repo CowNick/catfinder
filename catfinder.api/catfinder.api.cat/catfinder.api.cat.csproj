@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\catfinder.api.orm\catfinder.api.orm.csproj" />
+    <ProjectReference Include="..\catfinder.api.picture\catfinder.api.image.csproj" />
+  </ItemGroup>
+
 </Project>
