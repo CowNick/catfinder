@@ -1,4 +1,5 @@
 ﻿using catfinder.api.cat;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Autofac;
@@ -37,6 +38,10 @@ namespace catfinder.api.Framework
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
+			});
+			app.UseCors(corsPolicyBuilder =>
+			{
+				corsPolicyBuilder.AllowAnyOrigin();
 			});
 
 			await base.OnApplicationInitializationAsync(context);

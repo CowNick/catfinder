@@ -40,7 +40,7 @@ namespace catfinder.api.Controllers
 
 			var arcgisConfig = _configuration.GetSection(ArcgisConfig.Position).Get<ArcgisConfig>();
 			var requestOriginUri = new Uri(refererUrl);
-			var requestOrigin = requestOriginUri.AbsoluteUri.Replace(requestOriginUri.PathAndQuery, string.Empty).ToLower();
+			var requestOrigin = requestOriginUri.PathAndQuery != "/" ? requestOriginUri.AbsoluteUri.Replace(requestOriginUri.PathAndQuery, string.Empty).ToLower() : requestOriginUri.AbsoluteUri.TrimEnd('/');
 
 			if (!arcgisConfig.AllowedReferer.ToLower().Split(',').Select(x => x.Trim('/')).Contains(requestOrigin))
 			{
