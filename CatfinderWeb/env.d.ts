@@ -2,6 +2,9 @@
 interface ImportMetaEnv {
   readonly APP_SHANGHAI_CENTER_POINT: string
   readonly APP_API_URL_BASE: string
+  readonly APP_ARCGIS_SERVER_URL_BASE: string
+  readonly APP_LAYER_POI_GDB_ID: string
+  readonly APP_LAYER_POI_STREET_GDB_ID: string
 }
 
 interface ImportMeta {

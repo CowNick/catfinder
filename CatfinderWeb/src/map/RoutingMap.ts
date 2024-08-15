@@ -1,11 +1,19 @@
 import Map from "@arcgis/core/Map"
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer"
+import SpatialReference from "@arcgis/core/geometry/SpatialReference"
 import MapView from "@arcgis/core/Views/MapView"
+import { SimpleRenderer } from "@arcgis/core/renderers"
+import { SimpleMarkerSymbol, SimpleLineSymbol } from "@arcgis/core/symbols"
+import Color from "@arcgis/core/Color"
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
+import { MapUrl } from '@/map/ArcgisUrl'
 
 export class RoutingMap
 {
 	private readonly _map : Map;
 	private _mapView? : MapView;
+	private _poiFeatureLayer? : FeatureLayer;
+
 	constructor()
 	{
 		this._map = new Map({
@@ -19,6 +27,7 @@ export class RoutingMap
 					})]
 			}
 		});
+		this.initLayers();
 	}
 
 	createMapView(container: HTMLDivElement) : MapView
@@ -32,4 +41,46 @@ export class RoutingMap
 
 		return this._mapView;
 	}
+
+	async searchPoi(keyword: string)
+	{
+		if (this._poiFeatureLayer === null)
+		{
+			return;
+		}
+
+		await this._poiFeatureLayer?.queryFeatures({
+			returnGeometry: true,
+			outFields: ['name'],
+			where: `name like N'%${keyword}%'`
+		});
+	}
+
+	private initLayers()
+	{
+		this._poiFeatureLayer = new FeatureLayer({
+			url: MapUrl.MapEditingPOIUrl,
+			spatialReference: SpatialReference.WebMercator,
+			renderer: new SimpleRenderer({
+				symbol: this.getPoiSymbol()
+			})
+		});
+		this._map.add(this._poiFeatureLayer);
+	}
+
+
+	private getPoiSymbol()
+	{
+		const color = Color.fromHex('#6B7CFC');
+		color.a = 1;
+
+		return new SimpleMarkerSymbol({
+			color: color,
+			size: 16,
+			outline: new SimpleLineSymbol({
+				width: 1.333
+			})
+		});
+	}
 }
+
