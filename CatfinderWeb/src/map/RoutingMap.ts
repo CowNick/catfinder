@@ -44,28 +44,48 @@ export class RoutingMap
 
 	async searchPoi(keyword: string)
 	{
-		if (this._poiFeatureLayer === null)
+		if (this._poiFeatureLayer === undefined)
 		{
 			return;
 		}
 
-		await this._poiFeatureLayer?.queryFeatures({
+		this._poiFeatureLayer.url = MapUrl.MapEditingPOIUrl;
+		const dataLayer = new FeatureLayer({
+			url: MapUrl.MapEditingPOIUrl,
+			spatialReference: SpatialReference.WebMercator
+		});
+		const featureSet =  await dataLayer.queryFeatures({
 			returnGeometry: true,
 			outFields: ['name'],
 			where: `name like N'%${keyword}%'`
 		});
+		this.clearFeatureLayer(this._poiFeatureLayer);
+		this._poiFeatureLayer.applyEdits({ addFeatures: featureSet.features });
 	}
 
 	private initLayers()
 	{
 		this._poiFeatureLayer = new FeatureLayer({
-			url: MapUrl.MapEditingPOIUrl,
 			spatialReference: SpatialReference.WebMercator,
+			source: [],
+			objectIdField: "ObjectId",
+			fields: [
+				{name: "ObjectId", type:"integer" },
+				{name:"fclass", type:"string"}, 
+				{name:"name", type: "string"}
+			],
+			geometryType:"point",
 			renderer: new SimpleRenderer({
 				symbol: this.getPoiSymbol()
 			})
 		});
 		this._map.add(this._poiFeatureLayer);
+	}
+
+	private async clearFeatureLayer(layer: FeatureLayer)
+	{
+		const featuresSet = await layer.queryFeatures();
+		layer.applyEdits({deleteFeatures: featuresSet.features});
 	}
 
 
