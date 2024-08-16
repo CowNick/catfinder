@@ -21,7 +21,7 @@
 	async function applySearch(keywords: string)
 	{
 		loadingIndicator.show();
-		routingMap.searchPoi(keywords);
+		await routingMap.searchPoi(keywords);
 		loadingIndicator.hide();
 	}
 </script>
