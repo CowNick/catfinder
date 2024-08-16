@@ -71,7 +71,7 @@ export class RoutingMap
 			objectIdField: "ObjectId",
 			fields: [
 				{name: "ObjectId", type:"integer" },
-				{name:"fclass", type:"string"}, 
+				{name:"fclass", type:"string"},
 				{name:"name", type: "string"}
 			],
 			geometryType:"point",

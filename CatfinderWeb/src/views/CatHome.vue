@@ -9,14 +9,10 @@
 	import NavBar from "@/components/NavBar.vue"
 	import { RoutingMap } from "@/map/RoutingMap";
 	import { onMounted, ref } from "vue"
-    import { useLoading } from 'vue-loading-overlay'
+	import { loadingIndicator } from '@/services/LoadingIndicator'
 
 	const mapContainer = ref<HTMLDivElement>();
 	const routingMap = new RoutingMap();
-	const loadingIndicator = useLoading({
-			isFullPage: true,
-			loader: 'dots'
-		});
 
 	onMounted(() =>{
 		routingMap.createMapView(mapContainer.value as HTMLDivElement);
@@ -24,9 +20,9 @@
 
 	async function applySearch(keywords: string)
 	{
-		const activeLoading = loadingIndicator.show();
+		loadingIndicator.show();
 		routingMap.searchPoi(keywords);
-		activeLoading.hide();
+		loadingIndicator.hide();
 	}
 </script>
 <style lang="less" scoped>
