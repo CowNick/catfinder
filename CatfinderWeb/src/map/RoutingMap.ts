@@ -7,7 +7,7 @@ import { SimpleMarkerSymbol, SimpleLineSymbol } from "@arcgis/core/symbols"
 import Color from "@arcgis/core/Color"
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 import { MapUrl } from '@/map/ArcgisUrl'
-import { CatGraphicLayer } from "./Layers/CatLayer"
+import { CatGraphicLayer } from "@/map/Layers/CatLayer"
 
 export class RoutingMap
 {

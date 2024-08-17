@@ -21,6 +21,11 @@ const router = createRouter({
       path: '/CatListView',
       name: "CatListView",
       component: () => import('../views/CatListView.vue')
+    },
+    {
+      path: '/MapUpdate',
+      name: "MapUpdate",
+      component: () => import('../mapUpdate/views/MapUpdate.vue')
     }
   ]
 })
