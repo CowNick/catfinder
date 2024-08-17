@@ -21,7 +21,7 @@
 	async function applySearch(keywords: string, searchType: string)
 	{
 		loadingIndicator.show();
-		if (searchType == "address")
+		if (searchType === "address")
 		{
 			await routingMap.searchPoi(keywords);
 		}

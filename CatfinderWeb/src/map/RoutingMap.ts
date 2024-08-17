@@ -8,6 +8,7 @@ import Color from "@arcgis/core/Color"
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 import { MapUrl } from '@/map/ArcgisUrl'
 import { CatGraphicLayer } from "./Layers/CatLayer"
+import type Graphic from "@arcgis/core/Graphic"
 
 export class RoutingMap
 {
@@ -38,9 +39,9 @@ export class RoutingMap
 			container: container,
 			map: this._map,
 			center: import.meta.env.APP_SHANGHAI_CENTER_POINT.split(',').map(n => parseFloat(n)),
-			zoom: 15,
+			zoom: 15
 		});
-
+		this.initEvents();
 		return this._mapView;
 	}
 
@@ -73,6 +74,7 @@ export class RoutingMap
 	private initLayers()
 	{
 		this._poiFeatureLayer = new FeatureLayer({
+			id: "poi_layer",
 			spatialReference: SpatialReference.WebMercator,
 			source: [],
 			objectIdField: "ObjectId",
@@ -87,8 +89,32 @@ export class RoutingMap
 			})
 		});
 		this._map.add(this._poiFeatureLayer);
-
 		this._catGraphicLayer.initLater(this._map);
+	}
+
+	private async initEvents()
+	{
+		if (this._mapView === undefined)
+		{
+			return;
+		}
+
+		this._mapView.on("click", async ev => {
+			const hitTestResult =  await this._mapView?.hitTest(ev);
+			if ((hitTestResult?.results?.length || 0) > 0)
+			{
+				const intersectedGraphics = hitTestResult?.results
+					.filter(viewHit => viewHit.type === "graphic")
+					.map(viewHit => viewHit.graphic)
+					.filter(graphic => graphic.layer !== null) || [];
+				this.dispatchClick(intersectedGraphics);
+			}
+		});
+	}
+
+	private dispatchClick(graphics: Graphic[])
+	{
+		// TODO: handle the click event on specific layer
 	}
 
 	private async clearFeatureLayer(layer: FeatureLayer)
