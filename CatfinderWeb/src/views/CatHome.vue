@@ -31,6 +31,11 @@
 		}
 		loadingIndicator.hide();
 	}
+
+	function onGraphicClicked()
+	{
+		
+	}
 </script>
 <style lang="less" scoped>
 	.map-container

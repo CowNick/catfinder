@@ -33,7 +33,7 @@ export class RoutingMap
 		this.initLayers();
 	}
 
-	createMapView(container: HTMLDivElement) : MapView
+	createMapView(container: HTMLDivElement,  onGraphicClicked: (graphics: Graphic[]) => void) : MapView
 	{
 		this._mapView = new MapView({
 			container: container,
@@ -41,7 +41,7 @@ export class RoutingMap
 			center: import.meta.env.APP_SHANGHAI_CENTER_POINT.split(',').map(n => parseFloat(n)),
 			zoom: 15
 		});
-		this.initEvents();
+		this.initEvents(onGraphicClicked);
 		return this._mapView;
 	}
 
@@ -92,7 +92,7 @@ export class RoutingMap
 		this._catGraphicLayer.initLater(this._map);
 	}
 
-	private async initEvents()
+	private async initEvents(onGraphicClicked: (graphics: Graphic[]) => void)
 	{
 		if (this._mapView === undefined)
 		{
@@ -107,14 +107,15 @@ export class RoutingMap
 					.filter(viewHit => viewHit.type === "graphic")
 					.map(viewHit => viewHit.graphic)
 					.filter(graphic => graphic.layer !== null) || [];
-				this.dispatchClick(intersectedGraphics);
+				this.dispatchClick(intersectedGraphics, onGraphicClicked);
 			}
 		});
 	}
 
-	private dispatchClick(graphics: Graphic[])
+	private dispatchClick(graphics: Graphic[], onGraphicClicked: (graphics: Graphic[]) => void)
 	{
-		// TODO: handle the click event on specific layer
+		// currently only have one line here, but it may be more complex later.
+		onGraphicClicked(graphics);
 	}
 
 	private async clearFeatureLayer(layer: FeatureLayer)
