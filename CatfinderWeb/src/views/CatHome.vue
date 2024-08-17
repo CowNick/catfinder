@@ -10,12 +10,13 @@
 	import { RoutingMap } from "@/map/RoutingMap";
 	import { onMounted, ref } from "vue"
 	import { loadingIndicator } from '@/services/LoadingIndicator'
+	import type Graphic from "@arcgis/core/Graphic";
 
 	const mapContainer = ref<HTMLDivElement>();
 	const routingMap = new RoutingMap();
 
 	onMounted(() =>{
-		routingMap.createMapView(mapContainer.value as HTMLDivElement);
+		routingMap.createMapView(mapContainer.value as HTMLDivElement, onGraphicClicked);
 	});
 
 	async function applySearch(keywords: string, searchType: string)
@@ -32,9 +33,9 @@
 		loadingIndicator.hide();
 	}
 
-	function onGraphicClicked()
+	function onGraphicClicked(graphics : Graphic[])
 	{
-		
+		console.log(graphics);
 	}
 </script>
 <style lang="less" scoped>

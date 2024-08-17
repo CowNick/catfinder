@@ -9,6 +9,7 @@ import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 import { MapUrl } from '@/map/ArcgisUrl'
 import { CatGraphicLayer } from "./Layers/CatLayer"
 import type Graphic from "@arcgis/core/Graphic"
+import type GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
 
 export class RoutingMap
 {
@@ -100,22 +101,41 @@ export class RoutingMap
 		}
 
 		this._mapView.on("click", async ev => {
-			const hitTestResult =  await this._mapView?.hitTest(ev);
+			const hitTestResult =  await this._mapView?.hitTest(ev, { include: [ this._poiFeatureLayer as FeatureLayer, this._catGraphicLayer.catLayer as GraphicsLayer ] });
 			if ((hitTestResult?.results?.length || 0) > 0)
 			{
 				const intersectedGraphics = hitTestResult?.results
 					.filter(viewHit => viewHit.type === "graphic")
 					.map(viewHit => viewHit.graphic)
 					.filter(graphic => graphic.layer !== null) || [];
-				this.dispatchClick(intersectedGraphics, onGraphicClicked);
+				if (intersectedGraphics.length > 0)
+				{
+					await this.dispatchClick(intersectedGraphics, onGraphicClicked);
+				}
 			}
 		});
 	}
 
-	private dispatchClick(graphics: Graphic[], onGraphicClicked: (graphics: Graphic[]) => void)
+	private async dispatchClick(graphics: Graphic[], onGraphicClicked: (graphics: Graphic[]) => void)
 	{
-		// currently only have one line here, but it may be more complex later.
-		onGraphicClicked(graphics);
+
+		// current we only handle the first graphic
+		const firstGraphic = graphics[0];
+		let graphicWithAttribute : Graphic | undefined;
+		if (firstGraphic.layer === this._poiFeatureLayer)
+		{
+			const featuresSet = await this._poiFeatureLayer.queryFeatures();
+			graphicWithAttribute = featuresSet.features.find(g => g.attributes.ObjectId === firstGraphic.attributes.ObjectId) || undefined;
+		}
+		else if(firstGraphic.layer === this._catGraphicLayer.catLayer)
+		{
+			// TODO: need test whether the hit test return the full attributes.
+		}
+
+		if (graphicWithAttribute)
+		{
+			onGraphicClicked([graphicWithAttribute]);
+		}
 	}
 
 	private async clearFeatureLayer(layer: FeatureLayer)
