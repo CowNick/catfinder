@@ -18,7 +18,7 @@
 	import { ref, defineEmits } from 'vue';
 
 	const emit = defineEmits<{
-		search: [keywords: string]
+		search: [keywords: string, searchType: string],
 	}>()
 
 	const keyword  = ref("");
