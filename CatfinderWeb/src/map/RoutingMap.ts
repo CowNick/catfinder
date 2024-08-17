@@ -7,12 +7,14 @@ import { SimpleMarkerSymbol, SimpleLineSymbol } from "@arcgis/core/symbols"
 import Color from "@arcgis/core/Color"
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 import { MapUrl } from '@/map/ArcgisUrl'
+import { CatGraphicLayer } from "./Layers/CatLayer"
 
 export class RoutingMap
 {
 	private readonly _map : Map;
 	private _mapView? : MapView;
 	private _poiFeatureLayer? : FeatureLayer;
+	private _catGraphicLayer = new CatGraphicLayer();
 
 	constructor()
 	{
@@ -63,6 +65,11 @@ export class RoutingMap
 		this._poiFeatureLayer.applyEdits({ addFeatures: featureSet.features });
 	}
 
+	async searchCat(keywords: string)
+	{
+		await this._catGraphicLayer.SearchCat(keywords);
+	}
+
 	private initLayers()
 	{
 		this._poiFeatureLayer = new FeatureLayer({
@@ -80,6 +87,8 @@ export class RoutingMap
 			})
 		});
 		this._map.add(this._poiFeatureLayer);
+
+		this._catGraphicLayer.initLater(this._map);
 	}
 
 	private async clearFeatureLayer(layer: FeatureLayer)

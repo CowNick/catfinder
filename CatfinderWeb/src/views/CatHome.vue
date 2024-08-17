@@ -18,10 +18,17 @@
 		routingMap.createMapView(mapContainer.value as HTMLDivElement);
 	});
 
-	async function applySearch(keywords: string)
+	async function applySearch(keywords: string, searchType: string)
 	{
 		loadingIndicator.show();
-		await routingMap.searchPoi(keywords);
+		if (searchType == "address")
+		{
+			await routingMap.searchPoi(keywords);
+		}
+		else
+		{
+			await routingMap.searchCat(keywords);
+		}
 		loadingIndicator.hide();
 	}
 </script>

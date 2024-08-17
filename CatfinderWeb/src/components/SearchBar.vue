@@ -10,7 +10,7 @@
 			</template>
 		</div>
 	<div><input type="input" v-model="keyword"></div>
-	<div class="search-btn" @click="$emit('search', keyword)"><i class="material-icons-round icon">route</i></div>
+	<div class="search-btn" @click="$emit('search', keyword, searchType)"><i class="material-icons-round icon">route</i></div>
 	</div>
 </div>
 </template>
