@@ -12,8 +12,8 @@ export class CatGraphicLayer
 
     initLater(map: Map)
     {
-        const _catlayer = new GraphicLayer({ id: "cat_point_layer"});
-        map.add(_catlayer);
+        this._catlayer = new GraphicLayer({ id: "cat_point_layer"});
+        map.add(this._catlayer);
     }
 
     async SearchCat(keywords: string) {
@@ -36,6 +36,11 @@ export class CatGraphicLayer
 
         this._catlayer.removeAll();
         this._catlayer.addMany(points);
+    }
+
+    clearCatsInMap()
+    {
+        this._catlayer?.removeAll();
     }
 
     private getPoiSymbol()
