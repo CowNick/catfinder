@@ -25,6 +25,7 @@ class LoadingIndicator
 
 		setTimeout(() => {
 			this.activeLoading?.hide();
+			this.activeLoading = undefined;
 		}, 1000);
 	}
 }
