@@ -8,11 +8,11 @@ import { MapUrl } from '@/map/ArcgisUrl'
 
 export class StreetLayer
 {
-    private _streetlayer? : FeatureLayer;
+    public streetlayer? : FeatureLayer;
 
     displayStreetEdit(map: Map)
     {
-        this._streetlayer =  new FeatureLayer({
+        this.streetlayer =  new FeatureLayer({
             id: "street_layer",
             spatialReference: SpatialReference.WebMercator,
 			source: [],
@@ -29,7 +29,7 @@ export class StreetLayer
             url: MapUrl.MapEditingStreetUrl,
 		});
 
-        map.add(this._streetlayer);
+        map.add(this.streetlayer);
     }
 
     private getStreetSymbol()
