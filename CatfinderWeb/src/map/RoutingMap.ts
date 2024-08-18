@@ -36,7 +36,7 @@ export class RoutingMap
 		this.initLayers();
 	}
 
-	createMapView(container: HTMLDivElement,  onGraphicClicked: (graphics: Graphic[]) => void) : MapView
+	createMapView(container: HTMLDivElement, onGraphicClicked: (graphics: Graphic[]) => void) : MapView
 	{
 		this._mapView = new MapView({
 			container: container,
@@ -109,7 +109,7 @@ export class RoutingMap
 		}
 
 		this._mapView.on("click", async ev => {
-			const hitTestResult =  await this._mapView?.hitTest(ev, { include: [ this._poiFeatureLayer as FeatureLayer, this._catGraphicLayer.catLayer as GraphicsLayer ] });
+			const hitTestResult =  await this._mapView?.hitTest(ev, { include: [ this._poiFeatureLayer as FeatureLayer, this._catGraphicLayer.catlayer as GraphicsLayer ] });
 			if ((hitTestResult?.results?.length || 0) > 0)
 			{
 				const intersectedGraphics = hitTestResult?.results
@@ -135,7 +135,7 @@ export class RoutingMap
 			const featuresSet = await this._poiFeatureLayer.queryFeatures();
 			graphicWithAttribute = featuresSet.features.find(g => g.attributes.ObjectId === firstGraphic.attributes.ObjectId) || undefined;
 		}
-		else if(firstGraphic.layer === this._catGraphicLayer.catLayer)
+		else if(firstGraphic.layer === this._catGraphicLayer.catlayer)
 		{
 			// TODO: need test whether the hit test return the full attributes.
 		}
