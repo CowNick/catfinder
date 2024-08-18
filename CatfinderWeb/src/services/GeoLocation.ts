@@ -1,6 +1,6 @@
 import Geometry from "@arcgis/core/geometry/Geometry"
 import Point from "@arcgis/core/geometry/Point";
-import webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtils"
+import { geographicToWebMercator } from "@arcgis/core/geometry/support/webMercatorUtils"
 import SpatialReference from "@arcgis/core/geometry/SpatialReference"
 import { ElMessage } from 'element-plus'
 
@@ -45,7 +45,7 @@ class GeoLocation
 			x: currentLocation.coords.longitude,
 			y: currentLocation.coords.latitude,
 		});
-		return webMercatorUtils.geographicToWebMercator(point);
+		return geographicToWebMercator(point);
 	}
 }
 const geoLocation = new GeoLocation();
