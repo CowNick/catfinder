@@ -9,6 +9,8 @@ import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 import { MapUrl } from '@/map/ArcgisUrl'
 import { CatGraphicLayer } from "./Layers/CatLayer"
 import type Graphic from "@arcgis/core/Graphic"
+import { Point, Polygon, Polyline } from "@arcgis/core/geometry"
+import Geometry from "@arcgis/core/geometry/Geometry"
 import type GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
 
 export class RoutingMap
@@ -64,7 +66,13 @@ export class RoutingMap
 			where: `name like N'%${keyword}%'`
 		});
 		this.clearFeatureLayer(this._poiFeatureLayer);
-		this._poiFeatureLayer.applyEdits({ addFeatures: featureSet.features });
+		await this._poiFeatureLayer.applyEdits({ addFeatures: featureSet.features });
+		const extentRes = await this._poiFeatureLayer.queryExtent();
+		this._mapView?.goTo(extentRes.extent);
+	}
+
+	async newRoute(geometries : Geometry[])
+	{
 	}
 
 	async searchCat(keywords: string)
