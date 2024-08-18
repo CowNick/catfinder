@@ -9,12 +9,12 @@ import { getAxiosWrapper } from "@/axios/axios"
 
 export class CatGraphicLayer
 {
-    private _catlayer? : GraphicLayer;
+    catLayer? : GraphicLayer;
 
     initLater(map: Map)
     {
-        this._catlayer = new GraphicLayer({ id: "cat_point_layer"});
-        map.add(this._catlayer);
+        this.catLayer = new GraphicLayer({ id: "cat_point_layer"});
+        map.add(this.catLayer);
     }
 
     async SearchCat(keywords: string) {
@@ -29,11 +29,11 @@ export class CatGraphicLayer
 
     addCatsInMap(Cats: Array<any>) 
     {
-        if (this._catlayer == null)
+        if (this.catLayer == null)
         {
             return;
         }
-        this._catlayer.removeAll();
+        this.catLayer.removeAll();
         if (Cats.length == 0)
         {
             return;
@@ -42,12 +42,12 @@ export class CatGraphicLayer
             geometry: new Point({ longitude: cat.XCrood, latitude: cat.YCoord }),
             symbol: this.getPoiSymbol()
         }));
-        this._catlayer.addMany(points);
+        this.catLayer.addMany(points);
     }
 
     clearCatsInMap()
     {
-        this._catlayer?.removeAll();
+        this.catLayer?.removeAll();
     }
 
     private getPoiSymbol()

@@ -2,38 +2,39 @@
 <div class="search-bar">
 	<div class="input-box">
 		<div class="switch" @click="switchSearchType">
-			<template v-if="searchType === 'address'">
+			<template v-if="type === SearchType.Address">
 				<i class="material-icons-round icon">not_listed_location</i>
 			</template>
-			<template v-if="searchType === 'cat'">
+			<template v-if="type === SearchType.Cat"">
 				<font-awesome-icon icon="cat" class="icon" />
 			</template>
 		</div>
 	<div><input type="input" v-model="keyword"></div>
 	<CameraBar></CameraBar>
-	<div class="search-btn" @click="$emit('search', keyword, searchType)"><i class="material-icons-round icon">route</i></div>
+	<div class="search-btn" @click="$emit('search', keyword, type)"><i class="material-icons-round icon">route</i></div>
 	</div>
 </div>
 </template>
 <script lang="ts" setup>
 	import { ref, defineEmits } from 'vue';
 	import CameraBar from "@/components/CameraBar.vue"
+	import { SearchType } from '@/model';
 
 	const emit = defineEmits<{
-		search: [keywords: string, searchType: string],
+		search: [keywords: string, type:SearchType ],
 	}>()
+	const type = ref(SearchType.Address);
 
 	const keyword  = ref("");
-	const searchType = ref("address");
 	function switchSearchType()
 	{
-		if(searchType.value === "address")
+		if(type.value === SearchType.Address)
 		{
-			searchType.value = "cat";
+			type.value = SearchType.Cat;
 		}
 		else
 		{
-			searchType.value = "address";
+			type.value = SearchType.Address;
 		}
 	}
 </script>
