@@ -4,7 +4,7 @@ namespace catfinder.api.cat.Interface
 {
 	public interface ICatPictureService
 	{
-		Task<CatDTO> UploadAsync(Stream[] files, CatDTO cat);
+		Task UploadAsync((Stream stream, string ext)[] files, CatDTO cat);
 
 		Task<CatPictureDTO[]> SearchAsync(string path);
 	}

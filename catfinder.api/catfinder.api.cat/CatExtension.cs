@@ -9,6 +9,7 @@ namespace catfinder.api.cat
 		public static void AddCat(this IServiceCollection services)
 		{
 			services.AddScoped<ICatService, CatService>();
+			services.AddScoped<ICatPictureService, CatPictureService>();
 		}
 	}
 }

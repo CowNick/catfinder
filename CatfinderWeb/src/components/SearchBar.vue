@@ -10,12 +10,14 @@
 			</template>
 		</div>
 	<div><input type="input" v-model="keyword"></div>
+	<CameraBar></CameraBar>
 	<div class="search-btn" @click="$emit('search', keyword, searchType)"><i class="material-icons-round icon">route</i></div>
 	</div>
 </div>
 </template>
 <script lang="ts" setup>
 	import { ref, defineEmits } from 'vue';
+	import CameraBar from "@/components/CameraBar.vue"
 
 	const emit = defineEmits<{
 		search: [keywords: string, searchType: string],
@@ -45,7 +47,7 @@
 		.input-box
 		{
 			display: grid;
-			grid-template-columns: 50px auto 50px;
+			grid-template-columns: 50px auto 40px 40px;
 			width:100%;
 			height: 42px;
     		border: 2px solid #a89c9c;

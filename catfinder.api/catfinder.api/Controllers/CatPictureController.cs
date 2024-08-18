@@ -2,6 +2,7 @@ using Asp.Versioning;
 using catfinder.api.cat.DTO;
 using catfinder.api.cat.Interface;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace catfinder.api.Controllers
 {
@@ -21,10 +22,24 @@ namespace catfinder.api.Controllers
 		}
 
 		[HttpPost]
-		public async Task<CatDTO> UploadAsync(IFormCollection form, CatDTO cat)
+		public async Task<IActionResult> UploadAsync(IFormCollection form)
 		{
-			var files = form.Files.Select(r => r.OpenReadStream()).ToArray();
-			return await _catPictureService.UploadAsync(files, cat);
+			if(!form.TryGetValue("cat", out var cat))
+			{
+				return BadRequest("Please open GPS position.");
+			}
+
+			var catDTO = JsonSerializer.Deserialize<CatDTO>(cat.ToString());
+			if (catDTO == null)
+			{
+				return BadRequest("Please open GPS position.");
+			}
+
+			var files = form.Files
+				.Where(r => r.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || r.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+				.Select(r => (r.OpenReadStream(), Path.GetExtension(r.FileName))).ToArray();
+			await _catPictureService.UploadAsync(files, catDTO);
+			return Created();
 		}
 
 		[HttpPost("search")]

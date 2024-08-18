@@ -22,6 +22,8 @@ public partial class CatDBContext : DbContext
 
     public virtual DbSet<CatPicture> CatPictures { get; set; }
 
+    public virtual DbSet<Catboundary> Catboundaries { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Initial Catalog=catfinderGeo;Data Source=localhost;User ID=tfuser;password=$transfinder2006;Trusted_Connection=True;Encrypt=False");
@@ -86,6 +88,19 @@ public partial class CatDBContext : DbContext
                 .HasForeignKey(d => d.CatId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Cat_ID_CatPicture_CatID");
+        });
+
+        modelBuilder.Entity<Catboundary>(entity =>
+        {
+            entity.HasKey(e => e.Objectid).HasName("R27_pk");
+
+            entity.ToTable("CATBOUNDARY");
+
+            entity.Property(e => e.Objectid)
+                .ValueGeneratedNever()
+                .HasColumnName("OBJECTID");
+            entity.Property(e => e.Catid).HasColumnName("CATID");
+            entity.Property(e => e.GdbGeomattrData).HasColumnName("GDB_GEOMATTR_DATA");
         });
         modelBuilder.HasSequence("SDE_CONNECTION_ID_GENERATOR")
             .HasMax(2147483647L)

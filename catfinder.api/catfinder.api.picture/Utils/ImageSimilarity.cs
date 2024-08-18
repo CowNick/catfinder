@@ -11,7 +11,7 @@ namespace catfinder.api.picture.Utils
 		/// <param name="sourceHashCode">source hashCode</param>
 		/// <param name="hashCode">compare hashCode</param>
 		/// <returns></returns>
-		public static int HammingDistance(string sourceHashCode, string hashCode)
+		public static int HammingDistance(string? sourceHashCode, string? hashCode)
 		{
 			if (string.IsNullOrEmpty(sourceHashCode) || string.IsNullOrEmpty(hashCode))
 			{
