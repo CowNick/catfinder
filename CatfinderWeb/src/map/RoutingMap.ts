@@ -1,24 +1,29 @@
 import Map from "@arcgis/core/Map"
-import FeatureLayer from "@arcgis/core/layers/FeatureLayer"
-import SpatialReference from "@arcgis/core/geometry/SpatialReference"
 import MapView from "@arcgis/core/Views/MapView"
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer"
+import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
+import { Point, Polygon, Polyline } from "@arcgis/core/geometry"
+import Geometry from "@arcgis/core/geometry/Geometry"
+import Graphic from "@arcgis/core/Graphic"
 import { SimpleRenderer } from "@arcgis/core/renderers"
-import { SimpleMarkerSymbol, SimpleLineSymbol } from "@arcgis/core/symbols"
+import { SimpleMarkerSymbol, SimpleLineSymbol, TextSymbol } from "@arcgis/core/symbols"
+import SpatialReference from "@arcgis/core/geometry/SpatialReference"
 import Color from "@arcgis/core/Color"
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
 import { MapUrl } from '@/map/ArcgisUrl'
-import { CatGraphicLayer } from "./Layers/CatLayer"
-import type Graphic from "@arcgis/core/Graphic"
-import { Point, Polygon, Polyline } from "@arcgis/core/geometry"
-import Geometry from "@arcgis/core/geometry/Geometry"
-import type GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
+import { CatGraphicLayer } from "@/map/Layers/CatLayer"
+import { solve as solveMapRoute} from "@arcgis/core/rest/route"
+import RouteParameters from "@arcgis/core/rest/support/RouteParameters"
+import FeatureSet from "@arcgis/core/rest/support/FeatureSet"
+import type { RouteStop } from "@/model"
 
 export class RoutingMap
 {
 	private readonly _map : Map;
 	private _mapView? : MapView;
 	private _poiFeatureLayer? : FeatureLayer;
-	private _catGraphicLayer = new CatGraphicLayer();
+	private readonly _catGraphicLayer = new CatGraphicLayer();
+	private _routeLayer? : GraphicsLayer;
 
 	constructor()
 	{
@@ -73,6 +78,72 @@ export class RoutingMap
 
 	async newRoute(geometries : Geometry[])
 	{
+		const routeParameter = new RouteParameters({
+			returnRoutes: true,
+			returnStops: true,
+			returnDirections: true,
+			returnPolygonBarriers: true,
+			returnZ: true,
+			startTimeIsUTC: true,
+			preserveFirstStop: true,
+			preserveLastStop: true,
+			outSpatialReference: SpatialReference.WebMercator,
+			directionsTimeAttribute: 'Time',
+			directionsLengthUnits: 'kilometers',
+			restrictionAttributes: ["oneway", "traversable"],
+			restrictUTurns: "allow-backtrack",
+			outputLines: "true-shape",
+			stops: new FeatureSet({
+				features: geometries.map(g => ({
+					geometry: g
+				}))
+			}),
+		});
+
+		const logParameterIfFailed = () =>{
+			console.error("Failed to resolve route, please check the following route parameter:");
+			console.log(routeParameter)
+		};
+
+		const routeStops: RouteStop[] = [];
+		try
+		{
+			const result = await solveMapRoute(MapUrl.NARouteUrl, routeParameter, { method: "post", responseType : "josn" });
+			if (result.routeResults.length === 0)
+			{
+				logParameterIfFailed();
+				return;
+			}
+			const routeResult = result.routeResults[0];
+			const stops = routeResult.stops.map((graphic, index)=> ({
+				StopGeometry: graphic.geometry,
+				StopPath: routeResult.directionLines.features[index].geometry as Polyline
+			}));
+			Array.prototype.push.apply(routeStops, stops);
+		}
+		catch (err)
+		{
+			logParameterIfFailed();
+			console.log(err);
+		}
+		this.drawRouteOnMap(routeStops);
+	}
+
+	drawRouteOnMap(routeStops: RouteStop[])
+	{
+		if(!this._routeLayer)
+		{
+			return;
+		}
+
+		const graphics: Graphic[] = [];
+		routeStops.forEach(stop => {
+			const stopGraphic = this.wrapRouteStopGraphic(stop.StopGeometry);
+			graphics.push(stopGraphic);
+			graphics.push(stopGraphic.attributes.labelGraphic);
+			graphics.push(this.wrapRouteDirectionLineGraphic(stop.StopPath));
+		});
+		this._routeLayer?.addMany(graphics);
 	}
 
 	async searchCat(keywords: string)
@@ -97,7 +168,11 @@ export class RoutingMap
 				symbol: this.getPoiSymbol()
 			})
 		});
-		this._map.add(this._poiFeatureLayer);
+
+		this._routeLayer = new GraphicsLayer({
+			id: 'route_layer'
+		});
+		this._map.addMany([this._poiFeatureLayer, this._routeLayer]);
 		this._catGraphicLayer.initLater(this._map);
 	}
 
@@ -152,7 +227,6 @@ export class RoutingMap
 		layer.applyEdits({deleteFeatures: featuresSet.features});
 	}
 
-
 	private getPoiSymbol()
 	{
 		const color = Color.fromHex('#6B7CFC');
@@ -164,6 +238,46 @@ export class RoutingMap
 			outline: new SimpleLineSymbol({
 				width: 1.333
 			})
+		});
+	}
+
+	private wrapRouteDirectionLineGraphic(line: Geometry) : Graphic
+	{
+		return new Graphic({
+			geometry: line,
+			symbol: new SimpleLineSymbol({
+				style: "solid",
+				width: 12,
+				join: "round",
+				color: Color.fromHex('#507d2a') //sap green
+			})
+		});
+	}
+
+	private wrapRouteStopGraphic(stop: Geometry) : Graphic
+	{
+		const getLabelGraphic = () => new Graphic({
+			geometry: stop,
+			symbol: new TextSymbol({
+				text: "",
+				color: Color.fromHex('#000'),
+				yoffset: -3,
+				font: {
+					size: 12
+				}
+			})
+		});
+
+		return new Graphic({
+			geometry: stop,
+			symbol: new SimpleMarkerSymbol({
+				style: "circle",
+				color: Color.fromHex('#32cd32'),
+				size: 16,
+			}),
+			attributes: {
+				labelGraphic: getLabelGraphic()
+			}
 		});
 	}
 }

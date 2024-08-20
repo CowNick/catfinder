@@ -42,8 +42,8 @@ class GeoLocation
 
 		const point = new Point({
 			spatialReference: SpatialReference.WebMercator,
-			x: currentLocation.coords.longitude,
-			y: currentLocation.coords.latitude,
+			x: currentLocation.coords.latitude,
+			y: currentLocation.coords.longitude,
 		});
 		return geographicToWebMercator(point);
 	}

@@ -71,7 +71,7 @@ async function newRoute()
 	const currentLocation = await geoLocation.WhereAmI();
 	if (currentLocation)
 	{
-		await routingMap.newRoute([selectedGeometry, currentLocation]);
+		await routingMap.newRoute([currentLocation, selectedGeometry]);
 	}
 }
 </script>
