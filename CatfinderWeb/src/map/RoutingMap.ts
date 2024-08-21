@@ -2,7 +2,8 @@ import Map from "@arcgis/core/Map"
 import MapView from "@arcgis/core/Views/MapView"
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer"
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
-import { Point, Polygon, Polyline } from "@arcgis/core/geometry"
+import { Extent, Point, Polygon, Polyline } from "@arcgis/core/geometry"
+import { union as unionGeometry } from "@arcgis/core/geometry/geometryEngine"
 import Geometry from "@arcgis/core/geometry/Geometry"
 import Graphic from "@arcgis/core/Graphic"
 import { SimpleRenderer } from "@arcgis/core/renderers"
@@ -16,6 +17,7 @@ import { solve as solveMapRoute} from "@arcgis/core/rest/route"
 import RouteParameters from "@arcgis/core/rest/support/RouteParameters"
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet"
 import type { RouteStop } from "@/model"
+import { loadingIndicator } from '@/services/LoadingIndicator'
 
 export class RoutingMap
 {
@@ -83,14 +85,12 @@ export class RoutingMap
 			returnStops: true,
 			returnDirections: true,
 			returnPolygonBarriers: true,
-			returnZ: true,
 			startTimeIsUTC: true,
 			preserveFirstStop: true,
 			preserveLastStop: true,
 			outSpatialReference: SpatialReference.WebMercator,
 			directionsTimeAttribute: 'Time',
 			directionsLengthUnits: 'kilometers',
-			restrictionAttributes: ["oneway", "traversable"],
 			restrictUTurns: "allow-backtrack",
 			outputLines: "true-shape",
 			stops: new FeatureSet({
@@ -108,17 +108,20 @@ export class RoutingMap
 		const routeStops: RouteStop[] = [];
 		try
 		{
-			const result = await solveMapRoute(MapUrl.NARouteUrl, routeParameter, { method: "post", responseType : "josn" });
+			loadingIndicator.show();
+			const result = await solveMapRoute(MapUrl.NARouteUrl, routeParameter, { method: "post", responseType : "json" });
 			if (result.routeResults.length === 0)
 			{
 				logParameterIfFailed();
 				return;
 			}
+
 			const routeResult = result.routeResults[0];
 			const stops = routeResult.stops.map((graphic, index)=> ({
 				StopGeometry: graphic.geometry,
-				StopPath: routeResult.directionLines.features[index].geometry as Polyline
+				StopPath: undefined  as Geometry | undefined
 			}));
+			stops[0].StopPath = routeResult.route.geometry;
 			Array.prototype.push.apply(routeStops, stops);
 		}
 		catch (err)
@@ -126,16 +129,24 @@ export class RoutingMap
 			logParameterIfFailed();
 			console.log(err);
 		}
-		this.drawRouteOnMap(routeStops);
+		finally
+		{
+			loadingIndicator.hide();
+		}
+
+		this._routeLayer?.graphics.removeAll();
+		await this.clearFeatureLayer(this._poiFeatureLayer as FeatureLayer);
+		await this.drawRouteOnMap(routeStops);
 	}
 
-	drawRouteOnMap(routeStops: RouteStop[])
+	async drawRouteOnMap(routeStops: RouteStop[])
 	{
 		if(!this._routeLayer)
 		{
 			return;
 		}
 
+		this._routeLayer.graphics.removeAll();
 		const graphics: Graphic[] = [];
 		routeStops.forEach(stop => {
 			const stopGraphic = this.wrapRouteStopGraphic(stop.StopGeometry);
@@ -144,6 +155,7 @@ export class RoutingMap
 			graphics.push(this.wrapRouteDirectionLineGraphic(stop.StopPath));
 		});
 		this._routeLayer?.addMany(graphics);
+		await this._mapView?.goTo(unionGeometry(graphics.map(g => g.geometry)).extent);
 	}
 
 	async searchCat(keywords: string)
@@ -247,7 +259,7 @@ export class RoutingMap
 			geometry: line,
 			symbol: new SimpleLineSymbol({
 				style: "solid",
-				width: 12,
+				width: 6,
 				join: "round",
 				color: Color.fromHex('#507d2a') //sap green
 			})

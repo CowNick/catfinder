@@ -72,6 +72,7 @@ async function newRoute()
 	if (currentLocation)
 	{
 		await routingMap.newRoute([currentLocation, selectedGeometry]);
+		showRouteWizard.value = false;
 	}
 }
 </script>
