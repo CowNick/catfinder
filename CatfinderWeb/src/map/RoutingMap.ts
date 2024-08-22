@@ -11,6 +11,7 @@ import { SimpleMarkerSymbol, SimpleLineSymbol, TextSymbol } from "@arcgis/core/s
 import SpatialReference from "@arcgis/core/geometry/SpatialReference"
 import Color from "@arcgis/core/Color"
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer'
+import { ElMessage } from 'element-plus'
 import { MapUrl } from '@/map/ArcgisUrl'
 import { CatGraphicLayer } from "@/map/Layers/CatLayer"
 import { solve as solveMapRoute} from "@arcgis/core/rest/route"
@@ -18,6 +19,7 @@ import RouteParameters from "@arcgis/core/rest/support/RouteParameters"
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet"
 import type { RouteStop } from "@/model"
 import { loadingIndicator } from '@/services/LoadingIndicator'
+
 
 export class RoutingMap
 {
@@ -136,6 +138,14 @@ export class RoutingMap
 
 		this._routeLayer?.graphics.removeAll();
 		await this.clearFeatureLayer(this._poiFeatureLayer as FeatureLayer);
+		if (routeStops.length === 0)
+		{
+			ElMessage({
+				type: "error",
+				message: "Dude, you should be careful, I'm a little fragile"
+			});
+			return;
+		}
 		await this.drawRouteOnMap(routeStops);
 	}
 
@@ -148,14 +158,17 @@ export class RoutingMap
 
 		this._routeLayer.graphics.removeAll();
 		const graphics: Graphic[] = [];
-		routeStops.forEach(stop => {
-			const stopGraphic = this.wrapRouteStopGraphic(stop.StopGeometry);
+		routeStops.forEach((stop, index) => {
+			const stopGraphic = this.wrapRouteStopGraphic(stop.StopGeometry, index);
+			graphics.push(this.wrapRouteDirectionLineGraphic(stop.StopPath));
 			graphics.push(stopGraphic);
 			graphics.push(stopGraphic.attributes.labelGraphic);
-			graphics.push(this.wrapRouteDirectionLineGraphic(stop.StopPath));
 		});
 		this._routeLayer?.addMany(graphics);
-		await this._mapView?.goTo(unionGeometry(graphics.map(g => g.geometry)).extent);
+		if (graphics.length > 0)
+		{
+			await this._mapView?.goTo(unionGeometry(graphics.map(g => g.geometry)).extent);
+		}
 	}
 
 	async searchCat(keywords: string)
@@ -213,7 +226,6 @@ export class RoutingMap
 
 	private async dispatchClick(graphics: Graphic[], onGraphicClicked: (graphics: Graphic[]) => void)
 	{
-
 		// current we only handle the first graphic
 		const firstGraphic = graphics[0];
 		let graphicWithAttribute : Graphic | undefined;
@@ -266,16 +278,17 @@ export class RoutingMap
 		});
 	}
 
-	private wrapRouteStopGraphic(stop: Geometry) : Graphic
+	private wrapRouteStopGraphic(stop: Geometry, index: number) : Graphic
 	{
 		const getLabelGraphic = () => new Graphic({
 			geometry: stop,
 			symbol: new TextSymbol({
-				text: "",
-				color: Color.fromHex('#000'),
+				text: index === 0 ? "起" : "终",
+				color: Color.fromHex('#fff'),
 				yoffset: -3,
 				font: {
-					size: 12
+					size: 10,
+					weight: "bold"
 				}
 			})
 		});
