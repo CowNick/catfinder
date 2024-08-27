@@ -92,6 +92,7 @@ export class RoutingMap
 			preserveLastStop: true,
 			outSpatialReference: SpatialReference.WebMercator,
 			directionsTimeAttribute: 'Time',
+			directionsLanguage: "zh-CN",
 			directionsLengthUnits: 'kilometers',
 			restrictUTurns: "allow-backtrack",
 			outputLines: "true-shape",
@@ -138,6 +139,7 @@ export class RoutingMap
 
 		this._routeLayer?.graphics.removeAll();
 		await this.clearFeatureLayer(this._poiFeatureLayer as FeatureLayer);
+		this._catGraphicLayer.catlayer?.removeAll();
 		if (routeStops.length === 0)
 		{
 			ElMessage({
@@ -236,7 +238,7 @@ export class RoutingMap
 		}
 		else if(firstGraphic.layer === this._catGraphicLayer.catlayer)
 		{
-			// TODO: need test whether the hit test return the full attributes.
+			graphicWithAttribute = this._catGraphicLayer.catlayer.graphics.find(g => g.attributes?.ObjectId === firstGraphic.attributes?.ObjectId)
 		}
 
 		if (graphicWithAttribute)

@@ -38,8 +38,12 @@ export class CatGraphicLayer
         {
             return;
         }
-        let points = Cats.map((cat: { xcoord: any; ycoord: any }) => new Graphic({
+        let points = Cats.map((cat: { xcoord: any, ycoord: any, name: string, id:  number }) => new Graphic({
             geometry: new Point({ longitude: cat.xcoord, latitude: cat.ycoord }),
+            attributes: {
+               name: cat.name,
+               ObjectId: cat.id
+            },
             symbol: this.getPoiSymbol()
         }));
         this.catlayer.addMany(points);
