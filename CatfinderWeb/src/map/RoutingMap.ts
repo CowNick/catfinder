@@ -19,7 +19,13 @@ import RouteParameters from "@arcgis/core/rest/support/RouteParameters"
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet"
 import type { RouteStop } from "@/model"
 import { loadingIndicator } from '@/services/LoadingIndicator'
+import * as locator from "@arcgis/core/rest/locator"
 
+export interface RouteResult {
+	success: boolean;
+	routeStops: RouteStop[];
+	directions: string[];
+}
 
 export class RoutingMap
 {
@@ -80,8 +86,7 @@ export class RoutingMap
 		this._mapView?.goTo(extentRes.extent);
 	}
 
-	async newRoute(geometries : Geometry[])
-	{
+	async newRoute(geometries: Geometry[]): Promise<RouteResult> {
 		const routeParameter = new RouteParameters({
 			returnRoutes: true,
 			returnStops: true,
@@ -103,52 +108,85 @@ export class RoutingMap
 			}),
 		});
 
-		const logParameterIfFailed = () =>{
+		const logParameterIfFailed = () => {
 			console.error("Failed to resolve route, please check the following route parameter:");
 			console.log(routeParameter)
 		};
 
 		const routeStops: RouteStop[] = [];
-		try
-		{
+		let directions: string[] = [];
+		let success = true;
+
+		try {
 			loadingIndicator.show();
-			const result = await solveMapRoute(MapUrl.NARouteUrl, routeParameter, { method: "post", responseType : "json" });
-			if (result.routeResults.length === 0)
-			{
+
+			// 反向地理编码
+			const locationNames = await this.reverseGeocode(geometries);
+
+			const result = await solveMapRoute(MapUrl.NARouteUrl, routeParameter, { method: "post", responseType: "json" });
+			if (result.routeResults.length === 0) {
 				logParameterIfFailed();
-				return;
+				success = false;
+				return { success, routeStops, directions };
 			}
 
 			const routeResult = result.routeResults[0];
-			const stops = routeResult.stops.map((graphic, index)=> ({
+			const stops = routeResult.stops.map((graphic, index) => ({
 				StopGeometry: graphic.geometry,
-				StopPath: undefined  as Geometry | undefined
+				StopPath: undefined as Geometry | undefined,
+				Name: locationNames[index] || `Stop ${index + 1}`
 			}));
 			stops[0].StopPath = routeResult.route.geometry;
 			Array.prototype.push.apply(routeStops, stops);
+
+			// 提取路线指引信息并替换通用名称
+			directions = routeResult.directions.features.map(feature => {
+				let text = feature.attributes.text;
+				stops.forEach((stop, index) => {
+					text = text.replace(`Location ${index + 1}`, stop.Name);
+				});
+				return text;
+			});
 		}
-		catch (err)
-		{
+		catch (err) {
 			logParameterIfFailed();
 			console.log(err);
+			success = false;
 		}
-		finally
-		{
+		finally {
 			loadingIndicator.hide();
 		}
 
 		this._routeLayer?.graphics.removeAll();
 		await this.clearFeatureLayer(this._poiFeatureLayer as FeatureLayer);
-		this._catGraphicLayer.catlayer?.removeAll();
-		if (routeStops.length === 0)
-		{
+		this._catGraphicLayer.catLayer?.removeAll();
+		if (routeStops.length === 0) {
 			ElMessage({
 				type: "error",
 				message: "Dude, you should be careful, I'm a little fragile"
 			});
-			return;
+			success = false;
 		}
-		await this.drawRouteOnMap(routeStops);
+		else {
+			await this.drawRouteOnMap(routeStops);
+		}
+
+		return { success, routeStops, directions };
+	}
+
+	private async reverseGeocode(geometries: Geometry[]): Promise<string[]> {
+		try {
+			const results = await Promise.all(geometries.map(geometry => 
+				locator.locationToAddress(MapUrl.GeoLocatorUrl, {
+					location: geometry.type === "point" ? geometry as Point : (geometry as Polygon | Polyline).extent.center,
+					outSpatialReference: SpatialReference.WebMercator
+				})
+			));
+			return results.map(result => result.address || "Unknown Location");
+		} catch (error) {
+			console.error("Reverse geocoding failed:", error);
+			return geometries.map(() => "Unknown Location");
+		}
 	}
 
 	async drawRouteOnMap(routeStops: RouteStop[])
@@ -211,7 +249,7 @@ export class RoutingMap
 		}
 
 		this._mapView.on("click", async ev => {
-			const hitTestResult =  await this._mapView?.hitTest(ev, { include: [ this._poiFeatureLayer as FeatureLayer, this._catGraphicLayer.catlayer as GraphicsLayer ] });
+			const hitTestResult =  await this._mapView?.hitTest(ev, { include: [ this._poiFeatureLayer as FeatureLayer, this._catGraphicLayer.catLayer as GraphicsLayer ] });
 			if ((hitTestResult?.results?.length || 0) > 0)
 			{
 				const intersectedGraphics = hitTestResult?.results
@@ -236,9 +274,9 @@ export class RoutingMap
 			const featuresSet = await this._poiFeatureLayer.queryFeatures();
 			graphicWithAttribute = featuresSet.features.find(g => g.attributes.ObjectId === firstGraphic.attributes.ObjectId) || undefined;
 		}
-		else if(firstGraphic.layer === this._catGraphicLayer.catlayer)
+		else if(firstGraphic.layer === this._catGraphicLayer.catLayer)
 		{
-			graphicWithAttribute = this._catGraphicLayer.catlayer.graphics.find(g => g.attributes?.ObjectId === firstGraphic.attributes?.ObjectId)
+			graphicWithAttribute = this._catGraphicLayer.catLayer.graphics.find(g => g.attributes?.ObjectId === firstGraphic.attributes?.ObjectId)
 		}
 
 		if (graphicWithAttribute)

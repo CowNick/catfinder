@@ -3,6 +3,7 @@
 	<NavBar/>
 	<div class="map-container" ref="mapContainer">
 	</div>
+	<Directions :directions="directions" />
 	<RouteWizard :destination="destination" :show="showRouteWizard" @new-route="newRoute"/>
 </template>
 <script setup lang="ts">
@@ -10,7 +11,8 @@ import { ElMessage } from 'element-plus'
 import SearchBar from "@/components/SearchBar.vue"
 import NavBar from "@/components/NavBar.vue"
 import RouteWizard from "@/components/RouteWizard.vue";
-import { RoutingMap } from "@/map/RoutingMap";
+import Directions from '@/components/Directions.vue';
+import { RoutingMap, type RouteResult } from "@/map/RoutingMap";
 import { onMounted, ref } from "vue"
 import { loadingIndicator } from '@/services/LoadingIndicator'
 import type Graphic from "@arcgis/core/Graphic";
@@ -23,6 +25,7 @@ const routingMap = new RoutingMap();
 const showRouteWizard = ref(false);
 const searchType = ref<SearchType>();
 const destination = ref('');
+const directions = ref<string[]>([]);
 let selectedGeometry : Geometry;
 
 onMounted(() =>{
@@ -66,13 +69,30 @@ async function onGraphicClicked(graphics : Graphic[])
 	showRouteWizard.value = true;
 }
 
-async function newRoute()
-{
+async function newRoute() {
 	const currentLocation = await geoLocation.WhereAmI();
-	if (currentLocation)
-	{
-		await routingMap.newRoute([currentLocation, selectedGeometry]);
-		showRouteWizard.value = false;
+	if (currentLocation) {
+		loadingIndicator.show();
+		try {
+			const result: RouteResult = await routingMap.newRoute([currentLocation, selectedGeometry]);
+			if (result.success) {
+				directions.value = result.directions;
+				showRouteWizard.value = false;
+			} else {
+				ElMessage({
+					message: '无法计算路线，请稍后再试。',
+					type: 'warning',
+				});
+			}
+		} catch (error) {
+			console.error('Failed to get route:', error);
+			ElMessage({
+				message: '获取路线失败，请稍后再试。',
+				type: 'error',
+			});
+		} finally {
+			loadingIndicator.hide();
+		}
 	}
 }
 </script>
