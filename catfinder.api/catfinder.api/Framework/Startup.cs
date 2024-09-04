@@ -1,5 +1,6 @@
 ﻿using catfinder.api.cat;
-using Microsoft.AspNetCore.Cors.Infrastructure;
+using catfinder.api.picture.Interface;
+using catfinder.api.picture.Service;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Autofac;
@@ -67,6 +68,9 @@ namespace catfinder.api.Framework
 			services.AddSwaggerGen();
 
 			services.AddCat();
+
+			services.AddHttpClient<IImageStorageService, ImgbbStorageService>();
+			services.AddHttpClient<IImageStorageService, FreeImageHostStorageService>();
 
 			await base.ConfigureServicesAsync(context);
 		}

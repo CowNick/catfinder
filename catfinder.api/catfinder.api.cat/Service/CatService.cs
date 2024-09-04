@@ -10,13 +10,16 @@ namespace catfinder.api.cat.Service
 		public async Task<CatDTO[]> GetCatAsync()
 		{
 			using var db = new CatDBContext();
-			var cats = await db.Cats.Select(cat => new CatDTO
-			{
-				Id = cat.Id,
-				Name = cat.Name,
-				Xcoord = cat.Xcoord,
-				Ycoord = cat.Ycoord,
-			}).ToArrayAsync();
+			var cats = await db.Cats
+				.Include(c => c.CatPictures)
+				.Select(cat => new CatDTO
+				{
+					Id = cat.Id,
+					Name = cat.Name,
+					Xcoord = cat.Xcoord,
+					Ycoord = cat.Ycoord,
+					CatPictures = cat.CatPictures.Select(cp => cp.Path).ToList()
+				}).ToArrayAsync();
 
 			return cats;
 		}

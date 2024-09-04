@@ -18,6 +18,6 @@
 
 		public List<string> CatAliases { get; } = [];
 
-		public List<string> CatPictures { get; } = [];
+		public List<string> CatPictures { get; set; } = [];
 	}
 }
