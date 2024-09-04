@@ -80,7 +80,7 @@ export class RoutingMap
 			outFields: ['name'],
 			where: `name like N'%${keyword}%'`
 		});
-		this.clearFeatureLayer(this._poiFeatureLayer);
+		this.clearBothPoiAndCatLayerGraphic();
 		await this._poiFeatureLayer.applyEdits({ addFeatures: featureSet.features });
 		const extentRes = await this._poiFeatureLayer.queryExtent();
 		this._mapView?.goTo(extentRes.extent);
@@ -213,7 +213,27 @@ export class RoutingMap
 
 	async searchCat(keywords: string)
 	{
+		this.clearBothPoiAndCatLayerGraphic();
 		await this._catGraphicLayer.SearchCat(keywords);
+		if (this._catGraphicLayer.catLayer && this._catGraphicLayer.catLayer.graphics.length > 0) {
+			const extent = this._catGraphicLayer.catLayer.graphics.reduce((acc, graphic) => {
+				if (!graphic.geometry) return acc;
+				const pointExtent = graphic.geometry.type === "point" 
+					? new Extent({
+						xmin: (graphic.geometry as Point).x,
+						ymin: (graphic.geometry as Point).y,
+						xmax: (graphic.geometry as Point).x,
+						ymax: (graphic.geometry as Point).y,
+						spatialReference: graphic.geometry.spatialReference
+					  })
+					: graphic.geometry.extent;
+				return acc ? acc.union(pointExtent) : pointExtent;
+			}, null as Extent | null);
+
+			if (extent) {
+				await this._mapView?.goTo(extent.expand(1.2));
+			}
+		}
 	}
 
 	private initLayers()
@@ -283,6 +303,12 @@ export class RoutingMap
 		{
 			onGraphicClicked([graphicWithAttribute]);
 		}
+	}
+
+	private async clearBothPoiAndCatLayerGraphic()
+	{
+		this._poiFeatureLayer && this.clearFeatureLayer(this._poiFeatureLayer);
+		this._catGraphicLayer.catLayer?.removeAll();
 	}
 
 	private async clearFeatureLayer(layer: FeatureLayer)

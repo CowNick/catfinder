@@ -1,9 +1,9 @@
 <template>
-	<SearchBar @search="applySearch" ></SearchBar>
+	<SearchBar @search="applySearch"></SearchBar>
 	<NavBar/>
 	<div class="map-container" ref="mapContainer">
 	</div>
-	<Directions :directions="directions" />
+	<Directions v-if="directions.length > 0" :directions="directions" />
 	<RouteWizard :destination="destination" :show="showRouteWizard" @new-route="newRoute"/>
 </template>
 <script setup lang="ts">
@@ -19,12 +19,14 @@ import type Graphic from "@arcgis/core/Graphic";
 import Geometry from "@arcgis/core/geometry/Geometry"
 import { SearchType } from '@/model';
 import geoLocation from "@/services/GeoLocation"
+import type { RouteDestination } from '@/model';
+import { fa } from 'element-plus/es/locales.mjs';
 
 const mapContainer = ref<HTMLDivElement>();
 const routingMap = new RoutingMap();
 const showRouteWizard = ref(false);
 const searchType = ref<SearchType>();
-const destination = ref('');
+const destination = ref<RouteDestination>({ name: '', pictureUrl: '' });
 const directions = ref<string[]>([]);
 let selectedGeometry : Geometry;
 
@@ -45,6 +47,7 @@ async function applySearch(keywords: string, type: SearchType)
 	}
 
 	loadingIndicator.show();
+	showRouteWizard.value = false;
 	if (type === SearchType.Address)
 	{
 		await routingMap.searchPoi(keywords);
@@ -64,7 +67,10 @@ async function onGraphicClicked(graphics : Graphic[])
 	}
 
 	const destinationGraphic = graphics[0];
-	destination.value = destinationGraphic.attributes.name;
+	destination.value = {
+		name: destinationGraphic.attributes.name,
+		pictureUrl: destinationGraphic.attributes.pictureUrl || ''
+	};
 	selectedGeometry = destinationGraphic.geometry;
 	showRouteWizard.value = true;
 }

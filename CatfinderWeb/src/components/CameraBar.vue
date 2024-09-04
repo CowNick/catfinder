@@ -1,6 +1,6 @@
 <template>
 	<input class="upload" type="file" ref="file" @change="Upload"/>
-	<div class="button" @click="$refs.file.click" ><i class="material-icons-round">camera</i></div>
+	<div class="button" @click="$refs.file.click" ><i class="material-icons-outlined">add_photo_alternate</i></div>
 </template>
 <script setup lang="ts">
 	import { ref, defineEmits } from 'vue';

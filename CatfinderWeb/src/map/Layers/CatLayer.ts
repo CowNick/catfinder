@@ -42,11 +42,12 @@ export class CatGraphicLayer
 		{
 			return;
 		}
-		let points = Cats.map((cat: { xcoord: any, ycoord: any, name: string, id:  number }) => new Graphic({
+		let points = Cats.map((cat: { xcoord: any, ycoord: any, name: string, id:  number, catPictures: string[] }) => new Graphic({
 			geometry: new Point({ longitude: cat.xcoord, latitude: cat.ycoord }),
 			attributes: {
-			   name: cat.name,
-			   ObjectId: cat.id
+			name: cat.name,
+			ObjectId: cat.id,
+			pictureUrl: cat.catPictures[0] || '',
 			},
 			symbol: this.getPoiSymbol()
 		}));

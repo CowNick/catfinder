@@ -18,3 +18,9 @@ export interface RouteStop
 		length?: number
 	}
 }
+
+// 在现有的代码中添加这个新接口
+export interface RouteDestination {
+	name: string;
+	pictureUrl: string;
+}

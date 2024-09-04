@@ -6,12 +6,12 @@
 				<i class="material-icons-round icon">not_listed_location</i>
 			</template>
 			<template v-if="type === SearchType.Cat"">
-				<font-awesome-icon icon="cat" class="icon" />
+				<img src="@/assets/pics/cat-icon.png"/>
 			</template>
 		</div>
 	<div><input type="input" v-model="keyword"></div>
 	<CameraBar></CameraBar>
-	<div class="search-btn" @click="$emit('search', keyword, type)"><i class="material-icons-round icon">route</i></div>
+	<div class="search-btn" @click="$emit('search', keyword, type)"><i class="material-icons-round icon">travel_explore</i></div>
 	</div>
 </div>
 </template>
