@@ -10,11 +10,12 @@ namespace catfinder.api.cat.Service
 {
 	public class CatPictureService(IConfiguration configuration) : ICatPictureService
 	{
-		public async Task UploadAsync((Stream stream, string ext)[] files, CatDTO cat)
+		public async Task<List<CatPictureGroup>> UploadAsync((Stream stream, string ext)[] files, CatDTO cat)
 		{
 			var catPictures = await GetCatPictures(files, cat);
 			var groups = await GetCatPictureGroups(catPictures);
 			await UpdateCatPictures(groups, cat);
+			return groups;
 		}
 
 		private const int _maxDistance = 15;
@@ -93,7 +94,11 @@ namespace catfinder.api.cat.Service
 
 		private async Task<List<int>> GetNearIds(CatPicture catPicture)
 		{
-			return [];
+			using var db = new CatDBContext();
+			var pictures = await db.CatPictures.ToListAsync();
+			var result = pictures.Where(r => Math.Sqrt((double)((r.Xcoord - catPicture.Xcoord) * (r.Xcoord - catPicture.Xcoord) + (r.Ycoord - catPicture.Ycoord) * (r.Ycoord - catPicture.Ycoord))) < 10);
+
+			return result.Select(r => r.Id).ToList();
 		}
 
 		private async Task<List<CatPictureGroup>> SearchSimilarity(List<CatPictureGroup> groups, List<int> nearIds)
@@ -162,6 +167,7 @@ namespace catfinder.api.cat.Service
 				if (exist != null)
 				{
 					group.NewCatPictures.ForEach(r => r.CatId = exist.CatId);
+					await db.AddRangeAsync(group.NewCatPictures);
 					await db.SaveChangesAsync();
 					continue;
 				}
@@ -181,57 +187,14 @@ namespace catfinder.api.cat.Service
 				await db.SaveChangesAsync();
 			}
 		}
-
-		private async Task CalculateCatPolygon(List<CatPictureGroup> groups)
-		{
-			using var db = new CatDBContext();
-			foreach (var group in groups)
-			{
-				var catId = group.NewCatPictures[0].CatId;
-				if (group.ExistCatPictures.Count == 0)
-				{
-					if (group.NewCatPictures.Count < 3)
-					{
-						continue;
-					}
-
-					await GenerateCatBoundary(group.NewCatPictures, catId.Value);
-				}
-
-				var cat = await db.Cats.Include(r => r.CatPictures).FirstAsync(r => r.Id == catId);
-				if (cat.CatPictures.Count < 3)
-				{
-					continue;
-				}
-
-				var catBoundary = await db.Catboundaries.FirstAsync(r => r.Catid == catId);
-				if (catBoundary == null)
-				{
-					await GenerateCatBoundary(cat.CatPictures.ToList(), catId.Value);
-					continue;
-				}
-
-				await ReCalculateCatBoundary(catBoundary, group.NewCatPictures);
-			}
-		}
-
-		private async Task GenerateCatBoundary(List<CatPicture> catPictures, int catId)
-		{
-
-		}
-
-		private async Task ReCalculateCatBoundary(Catboundary catBoundary, List<CatPicture> catPictures)
-		{
-
-		}
-
-		private sealed class CatPictureGroup
-		{
-			public List<CatPicture> NewCatPictures { get; set; } = [];
-
-			public List<CatPicture> ExistCatPictures { get; set; } = [];
-		}
-
 		#endregion
 	}
+
+	public sealed class CatPictureGroup
+	{
+		public List<CatPicture> NewCatPictures { get; set; } = [];
+
+		public List<CatPicture> ExistCatPictures { get; set; } = [];
+	}
+
 }

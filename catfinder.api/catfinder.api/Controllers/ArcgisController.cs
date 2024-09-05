@@ -49,8 +49,7 @@ namespace catfinder.api.Controllers
 			return Ok(await CreateTokenResponse(arcgisConfig, requestOrigin, "referer"));
 		}
 
-
-		private async Task<ArcgisToken> CreateTokenResponse(ArcgisConfig config, string requestOrigin, string requestClient)
+		private static async Task<ArcgisToken> CreateTokenResponse(ArcgisConfig config, string requestOrigin, string requestClient)
 		{
 			Dictionary<string, string> parameters = new Dictionary<string, string>
 			{
@@ -79,7 +78,7 @@ namespace catfinder.api.Controllers
 			return arcgisToken;
 		}
 
-		private async Task<dynamic> QueryAsync(Dictionary<string, string> parameters, string server, string resource, Method method)
+		private static async Task<dynamic> QueryAsync(Dictionary<string, string> parameters, string server, string resource, Method method)
 		{
 			using RestClient restClient = new RestClient(server);
 			RestRequest request = new RestRequest(resource, method);

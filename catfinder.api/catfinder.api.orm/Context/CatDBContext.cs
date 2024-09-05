@@ -92,14 +92,14 @@ public partial class CatDBContext : DbContext
 
         modelBuilder.Entity<Catboundary>(entity =>
         {
-            entity.HasKey(e => e.Objectid).HasName("R27_pk");
+            entity.HasKey(e => e.Objectid).HasName("R54_pk");
 
             entity.ToTable("CATBOUNDARY");
 
             entity.Property(e => e.Objectid)
                 .ValueGeneratedNever()
                 .HasColumnName("OBJECTID");
-            entity.Property(e => e.Catid).HasColumnName("CATID");
+            entity.Property(e => e.CatId).HasColumnName("CatID");
             entity.Property(e => e.GdbGeomattrData).HasColumnName("GDB_GEOMATTR_DATA");
         });
         modelBuilder.HasSequence("SDE_CONNECTION_ID_GENERATOR")

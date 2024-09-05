@@ -10,7 +10,7 @@
 	{
 		let formData = new FormData();
 		formData.append('file', e.currentTarget.files[0]);
-		formData.append('cat', JSON.stringify({ Xcoord: 121.46981757804873, Ycoord: 31.234791846253444 }));
+		formData.append('cat', JSON.stringify({ Xcoord: 122.46981757804873, Ycoord: 32.234791846253444 }));
 		let axiosInstance = getAxiosWrapper();
 		let cat = await axiosInstance.postForm('api/CatPictures',
 			formData,

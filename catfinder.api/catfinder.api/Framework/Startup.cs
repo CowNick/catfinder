@@ -5,6 +5,8 @@ using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
+using Microsoft.EntityFrameworkCore;
+using catfinder.api.orm.Context;
 
 namespace catfinder.api.Framework
 {
@@ -62,6 +64,8 @@ namespace catfinder.api.Framework
 			{
 				options.ChangeControllerModelApiExplorerGroupName = false;
 			});
+
+			services.AddDbContext<CatDBContext>(options => options.UseSqlServer("Initial Catalog=catfinderGeo;Data Source=10.1.0.108;User ID=tfuser;password=$transfinder2006;Encrypt=False", x => x.UseNetTopologySuite()));
 
 			services.AddControllers();
 			services.AddEndpointsApiExplorer();
