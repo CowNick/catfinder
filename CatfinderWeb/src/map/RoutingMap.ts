@@ -80,7 +80,6 @@ export class RoutingMap
 			outFields: ['name'],
 			where: `name like N'%${keyword}%'`
 		});
-		this.clearBothPoiAndCatLayerGraphic();
 		await this._poiFeatureLayer.applyEdits({ addFeatures: featureSet.features });
 		const extentRes = await this._poiFeatureLayer.queryExtent();
 		this._mapView?.goTo(extentRes.extent);
@@ -213,7 +212,6 @@ export class RoutingMap
 
 	async searchCat(keywords: string)
 	{
-		this.clearBothPoiAndCatLayerGraphic();
 		await this._catGraphicLayer.SearchCat(keywords);
 		if (this._catGraphicLayer.catLayer && this._catGraphicLayer.catLayer.graphics.length > 0) {
 			const extent = this._catGraphicLayer.catLayer.graphics.reduce((acc, graphic) => {
@@ -284,6 +282,13 @@ export class RoutingMap
 		});
 	}
 
+	async clearBothPoiAndCatLayerGraphic()
+	{
+		this._poiFeatureLayer && this.clearFeatureLayer(this._poiFeatureLayer);
+		this._catGraphicLayer.catLayer?.removeAll();
+		this._routeLayer?.removeAll();
+	}
+
 	private async dispatchClick(graphics: Graphic[], onGraphicClicked: (graphics: Graphic[]) => void)
 	{
 		// current we only handle the first graphic
@@ -303,12 +308,6 @@ export class RoutingMap
 		{
 			onGraphicClicked([graphicWithAttribute]);
 		}
-	}
-
-	private async clearBothPoiAndCatLayerGraphic()
-	{
-		this._poiFeatureLayer && this.clearFeatureLayer(this._poiFeatureLayer);
-		this._catGraphicLayer.catLayer?.removeAll();
 	}
 
 	private async clearFeatureLayer(layer: FeatureLayer)

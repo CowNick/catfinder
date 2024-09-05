@@ -48,6 +48,8 @@ async function applySearch(keywords: string, type: SearchType)
 
 	loadingIndicator.show();
 	showRouteWizard.value = false;
+	directions.value = [];
+	await routingMap.clearBothPoiAndCatLayerGraphic();
 	if (type === SearchType.Address)
 	{
 		await routingMap.searchPoi(keywords);
