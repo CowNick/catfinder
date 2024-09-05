@@ -7,7 +7,7 @@ public partial class Catboundary
 {
     public int Objectid { get; set; }
 
-    public byte[]? GdbGeomattrData { get; set; }
+    public int? CatId { get; set; }
 
-    public int? Catid { get; set; }
+    public byte[]? GdbGeomattrData { get; set; }
 }
