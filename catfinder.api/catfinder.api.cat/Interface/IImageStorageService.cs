@@ -6,5 +6,6 @@ namespace catfinder.api.picture.Interface
 	public interface IImageStorageService
 	{
 		Task<string> UploadImageAsync(Stream imageStream, string fileName);
+		Task<Stream> GetImageStreamFromUrlAsync(string imageUrl);
 	}
 }

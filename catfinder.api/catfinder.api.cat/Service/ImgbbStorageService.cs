@@ -3,23 +3,22 @@ using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using catfinder.api.picture.Interface;
+
 using Microsoft.Extensions.Configuration;
 
 namespace catfinder.api.picture.Service
 {
-	public class ImgbbStorageService : IImageStorageService
+	public class ImgbbStorageService : BaseImageStorageService
 	{
 		private readonly string _apiKey;
-		private readonly HttpClient _httpClient;
 
 		public ImgbbStorageService(IConfiguration configuration, HttpClient httpClient)
+			: base(httpClient)
 		{
 			_apiKey = configuration["ImgbbApiKey"] ?? throw new ArgumentNullException(nameof(configuration));
-			_httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 		}
 
-		public async Task<string> UploadImageAsync(Stream imageStream, string fileName)
+		public override async Task<string> UploadImageAsync(Stream imageStream, string fileName)
 		{
 			using var content = new MultipartFormDataContent();
 			using var streamContent = new StreamContent(imageStream);
