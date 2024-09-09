@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
 using System.Text;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace catfinder.api.picture.Utils
 {
@@ -32,6 +34,31 @@ namespace catfinder.api.picture.Utils
 		}
 
 		/// <summary>
+		/// Get Hash Code from Stream
+		/// </summary>
+		/// <param name="imageStream">Image stream</param>
+		/// <returns>Hash code of the image</returns>
+		public static string ProduceFingerFromStream(Stream imageStream)
+		{
+			try
+			{
+#if WINDOWS
+				using var image = Image.FromStream(imageStream);
+#else
+				using var bitmap = new Bitmap(imageStream);
+				using var image = new Bitmap(bitmap);
+#endif
+				return produceFinger(image);
+			}
+			catch (Exception ex)
+			{
+				// 考虑记录异常
+				Console.WriteLine($"Error producing finger from stream: {ex.Message}");
+				return string.Empty;
+			}
+		}
+
+		/// <summary>
 		/// Get Hash Code
 		/// </summary>
 		/// <param name="filename"></param>
@@ -41,11 +68,12 @@ namespace catfinder.api.picture.Utils
 			try
 			{
 				using var source = Image.FromFile(filename);
-				var result = produceFinger(source);
-				return result;
+				return produceFinger(source);
 			}
-			catch
+			catch (Exception ex)
 			{
+				// 考虑记录异常
+				Console.WriteLine($"Error producing finger from file: {ex.Message}");
 				return string.Empty;
 			}
 		}

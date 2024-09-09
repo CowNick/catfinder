@@ -7,6 +7,8 @@ using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
 using Microsoft.EntityFrameworkCore;
 using catfinder.api.orm.Context;
+using catfinder.api.picture.Config;
+using Microsoft.Extensions.Options;
 
 namespace catfinder.api.Framework
 {
@@ -53,6 +55,7 @@ namespace catfinder.api.Framework
 		public override async Task ConfigureServicesAsync(ServiceConfigurationContext context)
 		{
 			var services = context.Services;
+			var configuration = context.Services.GetConfiguration();
 
 			context.Services.AddAbpApiVersioning(options =>
 			{
@@ -73,8 +76,22 @@ namespace catfinder.api.Framework
 
 			services.AddCat();
 
-			services.AddHttpClient<IImageStorageService, ImgbbStorageService>();
-			services.AddHttpClient<IImageStorageService, FreeImageHostStorageService>();
+			// 绑定ImageStorage配置
+			services.Configure<ImageStorageConfig>(configuration.GetSection("ImageStorage"));
+
+			// 根据配置注册适当的IImageStorageService
+			services.AddHttpClient<ImgbbStorageService>();
+			services.AddHttpClient<FreeImageHostStorageService>();
+			services.AddTransient<IImageStorageService>(sp =>
+			{
+				var config = sp.GetRequiredService<IOptions<ImageStorageConfig>>().Value;
+				return config.Provider.ToLower() switch
+				{
+					"imgbb" => sp.GetRequiredService<ImgbbStorageService>(),
+					"freeimagehost" => sp.GetRequiredService<FreeImageHostStorageService>(),
+					_ => throw new InvalidOperationException($"Unsupported image storage provider: {config.Provider}")
+				};
+			});
 
 			await base.ConfigureServicesAsync(context);
 		}

@@ -1,15 +1,32 @@
-﻿using catfinder.api.cat.DTO;
-using catfinder.api.cat.Interface;
-using catfinder.api.orm.Context;
-using catfinder.api.orm.Entities;
-using catfinder.api.picture.Utils;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
+using catfinder.api.cat.DTO;
+using catfinder.api.cat.Interface;
+using catfinder.api.orm.Context;
+using catfinder.api.orm.Entities;
+using catfinder.api.picture.Interface;
+using catfinder.api.picture.Utils;
+
 namespace catfinder.api.cat.Service
 {
-	public class CatPictureService(IConfiguration configuration) : ICatPictureService
+	public class CatPictureService : ICatPictureService
 	{
+		private readonly IConfiguration _configuration;
+		private readonly IImageStorageService _imageStorageService;
+
+		public CatPictureService(IConfiguration configuration, IImageStorageService imageStorageService)
+		{
+			_configuration = configuration;
+			_imageStorageService = imageStorageService;
+		}
+
 		public async Task<List<CatPictureGroup>> UploadAsync((Stream stream, string ext)[] files, CatDTO cat)
 		{
 			var catPictures = await GetCatPictures(files, cat);
@@ -47,18 +64,18 @@ namespace catfinder.api.cat.Service
 
 		private async Task<List<CatPicture>> GetCatPictures((Stream stream, string ext)[] files, CatDTO cat)
 		{
-			var filePathes = await UploadToDrawingBoardAsync(files);
-			cat.CatPictures.AddRange(filePathes);
+			var fileUrls = await UploadToImageStorageAsync(files);
+			cat.CatPictures.AddRange(fileUrls);
 
 			List<CatPicture> catPictures = [];
-			foreach (var path in filePathes)
+			foreach (var (stream, ext) in files)
 			{
 				CatPicture catPicture = new()
 				{
-					Path = path,
+					Path = fileUrls[Array.IndexOf(files, (stream, ext))],
 					Xcoord = cat.Xcoord,
 					Ycoord = cat.Ycoord,
-					HashCode = ImageSimilarityUtil.ProduceFinger(path),
+					HashCode = ImageSimilarityUtil.ProduceFingerFromStream(stream),
 				};
 
 				catPictures.Add(catPicture);
@@ -67,19 +84,17 @@ namespace catfinder.api.cat.Service
 			return catPictures;
 		}
 
-		private async Task<List<string>> UploadToDrawingBoardAsync((Stream stream, string ext)[] files)
+		private async Task<List<string>> UploadToImageStorageAsync((Stream stream, string ext)[] files)
 		{
-			List<string> pathList = [];
-			var root = configuration.GetSection("ImageStore").Value ?? throw new InvalidProgramException("Image store was invalid");
+			List<string> urlList = [];
 			foreach (var (stream, ext) in files)
 			{
-				var path = Path.Combine(root, Path.GetRandomFileName() + ext);
-				using var fileStream = File.Create(path);
-				await stream.CopyToAsync(fileStream);
-				pathList.Add(path);
+				var fileName = Path.GetRandomFileName() + ext;
+				var url = await _imageStorageService.UploadImageAsync(stream, fileName);
+				urlList.Add(url);
 			}
 
-			return pathList;
+			return urlList;
 		}
 
 		private async Task<List<CatPictureGroup>> GetCatPictureGroups(List<CatPicture> catPictures)
@@ -163,13 +178,16 @@ namespace catfinder.api.cat.Service
 			using var db = new CatDBContext();
 			foreach (var group in groups)
 			{
-				var exist = group.ExistCatPictures[0];
-				if (exist != null)
+				if (group.ExistCatPictures.Count > 0)
 				{
-					group.NewCatPictures.ForEach(r => r.CatId = exist.CatId);
-					await db.AddRangeAsync(group.NewCatPictures);
-					await db.SaveChangesAsync();
-					continue;
+					var exist = group.ExistCatPictures[0];
+					if (exist != null)
+					{
+						group.NewCatPictures.ForEach(r => r.CatId = exist.CatId);
+						await db.AddRangeAsync(group.NewCatPictures);
+						await db.SaveChangesAsync();
+						continue;
+					}
 				}
 
 				Cat entity = new()
