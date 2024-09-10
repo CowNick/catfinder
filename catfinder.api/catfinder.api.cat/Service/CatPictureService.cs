@@ -27,12 +27,47 @@ namespace catfinder.api.cat.Service
 			_imageStorageService = imageStorageService;
 		}
 
-		public async Task<List<CatPictureGroup>> UploadAsync((Stream stream, string ext)[] files, CatDTO cat)
+		public async Task<List<CatPictureGroup>> UploadAsync((byte[] bytes, string ext)[] files, CatDTO cat)
 		{
 			var catPictures = await GetCatPictures(files, cat);
 			var groups = await GetCatPictureGroups(catPictures);
 			await UpdateCatPictures(groups, cat);
 			return groups;
+		}
+
+		private async Task<List<CatPicture>> GetCatPictures((byte[] bytes, string ext)[] files, CatDTO cat)
+		{
+			var fileUrls = await UploadToImageStorageAsync(files);
+			cat.CatPictures.AddRange(fileUrls);
+
+			List<CatPicture> catPictures = [];
+			foreach (var (bytes, ext) in files)
+			{
+				CatPicture catPicture = new()
+				{
+					Path = fileUrls[Array.IndexOf(files, (bytes, ext))],
+					Xcoord = cat.Xcoord,
+					Ycoord = cat.Ycoord,
+					HashCode = ImageSimilarityUtil.ProduceFingerFromBytes(bytes),
+				};
+
+				catPictures.Add(catPicture);
+			}
+
+			return catPictures;
+		}
+
+		private async Task<List<string>> UploadToImageStorageAsync((byte[] bytes, string ext)[] files)
+		{
+			List<string> urlList = [];
+			foreach (var (bytes, ext) in files)
+			{
+				var fileName = Path.GetRandomFileName() + ext;
+				var url = await _imageStorageService.UploadImageAsync(bytes, fileName);
+				urlList.Add(url);
+			}
+
+			return urlList;
 		}
 
 		private const int _maxDistance = 15;
@@ -61,41 +96,6 @@ namespace catfinder.api.cat.Service
 		}
 
 		#region Upload
-
-		private async Task<List<CatPicture>> GetCatPictures((Stream stream, string ext)[] files, CatDTO cat)
-		{
-			var fileUrls = await UploadToImageStorageAsync(files);
-			cat.CatPictures.AddRange(fileUrls);
-
-			List<CatPicture> catPictures = [];
-			foreach (var (stream, ext) in files)
-			{
-				CatPicture catPicture = new()
-				{
-					Path = fileUrls[Array.IndexOf(files, (stream, ext))],
-					Xcoord = cat.Xcoord,
-					Ycoord = cat.Ycoord,
-					HashCode = ImageSimilarityUtil.ProduceFingerFromStream(stream),
-				};
-
-				catPictures.Add(catPicture);
-			}
-
-			return catPictures;
-		}
-
-		private async Task<List<string>> UploadToImageStorageAsync((Stream stream, string ext)[] files)
-		{
-			List<string> urlList = [];
-			foreach (var (stream, ext) in files)
-			{
-				var fileName = Path.GetRandomFileName() + ext;
-				var url = await _imageStorageService.UploadImageAsync(stream, fileName);
-				urlList.Add(url);
-			}
-
-			return urlList;
-		}
 
 		private async Task<List<CatPictureGroup>> GetCatPictureGroups(List<CatPicture> catPictures)
 		{

@@ -30,9 +30,9 @@ namespace catfinder.api.Controllers
 		[HttpPost]
 		public async Task<IActionResult> UploadAsync(IFormCollection form)
 		{
-			if(!form.TryGetValue("cat", out var cat))
+			if (!form.TryGetValue("cat", out var cat))
 			{
-				return BadRequest("Please open GPS position."); 
+				return BadRequest("Please open GPS position.");
 			}
 
 			var catDTO = JsonSerializer.Deserialize<CatDTO>(cat.ToString());
@@ -43,7 +43,15 @@ namespace catfinder.api.Controllers
 
 			var files = form.Files
 				.Where(r => r.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || r.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-				.Select(r => (r.OpenReadStream(), Path.GetExtension(r.FileName))).ToArray();
+				.Select(async r =>
+				{
+					using var memoryStream = new MemoryStream();
+					await r.CopyToAsync(memoryStream);
+					return (bytes: memoryStream.ToArray(), ext: Path.GetExtension(r.FileName));
+				})
+				.Select(t => t.Result)
+				.ToArray();
+
 			var groups = await _catPictureService.UploadAsync(files, catDTO);
 			await CalculateCatPolygon(groups);
 			return Created();

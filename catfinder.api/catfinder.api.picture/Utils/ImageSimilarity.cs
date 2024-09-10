@@ -33,30 +33,7 @@ namespace catfinder.api.picture.Utils
 			return difference;
 		}
 
-		/// <summary>
-		/// Get Hash Code from Stream
-		/// </summary>
-		/// <param name="imageStream">Image stream</param>
-		/// <returns>Hash code of the image</returns>
-		public static string ProduceFingerFromStream(Stream imageStream)
-		{
-			try
-			{
-#if WINDOWS
-				using var image = Image.FromStream(imageStream);
-#else
-				using var bitmap = new Bitmap(imageStream);
-				using var image = new Bitmap(bitmap);
-#endif
-				return produceFinger(image);
-			}
-			catch (Exception ex)
-			{
-				// 考虑记录异常
-				Console.WriteLine($"Error producing finger from stream: {ex.Message}");
-				return string.Empty;
-			}
-		}
+
 
 		/// <summary>
 		/// Get Hash Code
@@ -169,6 +146,22 @@ namespace catfinder.api.picture.Utils
 			}
 
 			return " ";
+		}
+
+		public static string ProduceFingerFromBytes(byte[] imageBytes)
+		{
+			try
+			{
+				using var memoryStream = new MemoryStream(imageBytes);
+				using var image = Image.FromStream(memoryStream);
+
+				return produceFinger(image);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error producing finger from bytes: {ex.Message}");
+				return string.Empty;
+			}
 		}
 	}
 }

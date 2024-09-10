@@ -18,11 +18,10 @@ namespace catfinder.api.picture.Service
 			_apiKey = configuration["ImgbbApiKey"] ?? throw new ArgumentNullException(nameof(configuration));
 		}
 
-		public override async Task<string> UploadImageAsync(Stream imageStream, string fileName)
+		public override async Task<string> UploadImageAsync(byte[] imageBytes, string fileName)
 		{
 			using var content = new MultipartFormDataContent();
-			using var streamContent = new StreamContent(imageStream);
-			content.Add(streamContent, "image", fileName);
+			content.Add(new ByteArrayContent(imageBytes), "image", fileName);
 
 			var response = await _httpClient.PostAsync($"https://api.imgbb.com/1/upload?key={_apiKey}", content);
 			response.EnsureSuccessStatusCode();

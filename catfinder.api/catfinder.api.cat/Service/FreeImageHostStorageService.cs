@@ -1,13 +1,8 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-
-using catfinder.api.picture.Config;
 
 namespace catfinder.api.picture.Service
 {
@@ -15,17 +10,16 @@ namespace catfinder.api.picture.Service
 	{
 		private readonly string _apiKey;
 
-		public FreeImageHostStorageService(IOptions<ImageStorageConfig> config, HttpClient httpClient)
+		public FreeImageHostStorageService(IConfiguration configuration, HttpClient httpClient)
 			: base(httpClient)
 		{
-			_apiKey = config.Value.FreeImageHostApiKey ?? throw new ArgumentNullException(nameof(config));
+			_apiKey = configuration["FreeImageHostApiKey"] ?? throw new ArgumentNullException(nameof(configuration));
 		}
 
-		public override async Task<string> UploadImageAsync(Stream imageStream, string fileName)
+		public override async Task<string> UploadImageAsync(byte[] imageBytes, string fileName)
 		{
 			using var content = new MultipartFormDataContent();
-			using var streamContent = new StreamContent(imageStream);
-			content.Add(streamContent, "source", fileName);
+			content.Add(new ByteArrayContent(imageBytes), "source", fileName);
 			content.Add(new StringContent(_apiKey), "key");
 
 			var response = await _httpClient.PostAsync("https://freeimage.host/api/1/upload", content);

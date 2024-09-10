@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using catfinder.api.picture.Interface;
@@ -15,13 +14,13 @@ namespace catfinder.api.picture.Service
 			_httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 		}
 
-		public abstract Task<string> UploadImageAsync(Stream imageStream, string fileName);
+		public abstract Task<string> UploadImageAsync(byte[] imageBytes, string fileName);
 
-		public virtual async Task<Stream> GetImageStreamFromUrlAsync(string imageUrl)
+		public virtual async Task<byte[]> GetImageBytesFromUrlAsync(string imageUrl)
 		{
 			var response = await _httpClient.GetAsync(imageUrl);
 			response.EnsureSuccessStatusCode();
-			return await response.Content.ReadAsStreamAsync();
+			return await response.Content.ReadAsByteArrayAsync();
 		}
 	}
 }
