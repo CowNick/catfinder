@@ -8,6 +8,8 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
 import Sketch from "@arcgis/core/widgets/Sketch"
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel"
 import Editor from "@arcgis/core/widgets/Editor";
+import { execute } from "@arcgis/core/rest/geoprocessor";
+import { MapUrl } from '@/map/ArcgisUrl';
 
 export class StreetMap
 {
@@ -18,6 +20,11 @@ export class StreetMap
 	private _sketchViewModel?: SketchViewModel;
 	private _editor?: Editor;
 	private _selectedGraphics: Graphic[] = [];
+	private _pendingEdits: { addFeatures: Graphic[], updateFeatures: Graphic[], deleteFeatures: Graphic[] } = {
+		addFeatures: [],
+		updateFeatures: [],
+		deleteFeatures: []
+	};
 
 	constructor()
 	{
@@ -158,19 +165,7 @@ export class StreetMap
 	}
 
 	async applyEdit(graphic: Graphic): Promise<void> {
-		console.log("Applying edit to ArcGIS service", graphic);
-		// 实现将graphic添加到ArcGIS服务的逻辑
-		// 例如:
-		// if (this._streetFeatureLayer.streetlayer) {
-		//     try {
-		//         const result = await this._streetFeatureLayer.streetlayer.applyEdits({
-		//             addFeatures: [graphic]
-		//         });
-		//         console.log("Edit applied successfully", result);
-		//     } catch (error) {
-		//         console.error("Error applying edit:", error);
-		//     }
-		// }
+		this._pendingEdits.addFeatures.push(graphic);
 	}
 
 	async startEditing(graphic: Graphic): Promise<void> {
@@ -221,6 +216,11 @@ export class StreetMap
 
 		// 启动编辑会话
 		await this._editor.startUpdateWorkflowAtFeatureEdit(graphic);
+
+		// 在编辑完成时，将更新的图形添加到 pendingEdits
+		this._editor.on("edit-complete", (event) => {
+			this._pendingEdits.updateFeatures.push(event.graphics[0]);
+		});
 	}
 
 	stopEditing(): void {
@@ -254,6 +254,9 @@ export class StreetMap
 			return;
 		}
 
+		this._pendingEdits.deleteFeatures.push(...selectedGraphics);
+		// 不要立即应用删除，而是等待保存操作
+
 		try {
 			console.log("Attempting to delete", selectedGraphics.length, "graphics");
 			const deleteResults = await this._streetFeatureLayer.streetlayer.applyEdits({
@@ -286,6 +289,56 @@ export class StreetMap
 		} catch (error) {
 			console.error("Error in deleteSelectedGraphics:", error);
 			throw error; // 重新抛出错误，以便在调用方进行处理
+		}
+	}
+
+	async saveMap(): Promise<void> {
+		if (!this._streetFeatureLayer.streetlayer) {
+			throw new Error("Street layer is not initialized");
+		}
+
+		try {
+			const editResult = await this._streetFeatureLayer.streetlayer.applyEdits(this._pendingEdits);
+			console.log("Edit results:", editResult);
+
+			// 清空待处理的编辑
+			this._pendingEdits = { addFeatures: [], updateFeatures: [], deleteFeatures: [] };
+
+			// 刷新图层以显示更改
+			await this._streetFeatureLayer.streetlayer.refresh();
+
+			// 调用 buildnetwork GP 服务
+			await this.runBuildNetworkGP();
+		} catch (error) {
+			console.error("Error saving map or running BuildNetwork GP:", error);
+			throw error;
+		}
+	}
+
+	private async runBuildNetworkGP(): Promise<void> {
+		try {
+			const params = {
+				// 根据 GP 服务的要求设置参数
+				// 例如：
+				// input_features: this._streetFeatureLayer.streetlayer
+			};
+
+			execute(MapUrl.BuildNetworkGPUrl, params)
+				.then((result) => {
+					console.log("Geoprocessing task completed", result);
+				})
+				.catch((error) => {
+					console.error("Geoprocessing task failed", error);
+				});
+
+			// 处理 GP 服务的结果
+			// 例如，可能需要刷新地图或更新某些状态
+			if (this._mapView) {
+				await this._mapView.goTo(this._mapView.extent);
+			}
+		} catch (error) {
+			console.error("Error running BuildNetwork GP:", error);
+			throw error;
 		}
 	}
 }

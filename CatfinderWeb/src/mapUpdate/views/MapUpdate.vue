@@ -1,5 +1,5 @@
 <template>
-	<EditMenu @edit="OpenMapMenu"></EditMenu>
+	<EditMenu @edit="OpenMapMenu" @save="SaveMap"></EditMenu>
 	<RightClickMenu :show="showRightClickMenu" :showStreet="showRightClickMenuStreet" :x="MenuX" :y="MenuY" @create="CreateMap" @edit="EditMap" @delete="DeleteMap"></RightClickMenu>
 	<div class="map-container" ref="mapContainer" @click="onMapClick" @dblclick="onMapDoubleClick">
 	</div>
@@ -138,6 +138,18 @@
 			ElMessage.error('Failed to delete selected features. Please try again.');
 		}).finally(() => {
 			loadingIndicator.hide(); // 隐藏加载指示器
+		});
+	}
+
+	function SaveMap() {
+		loadingIndicator.show();
+		streetMap.saveMap().then(() => {
+			ElMessage.success('Map saved and network built successfully');
+		}).catch(error => {
+			console.error("Error saving map or building network:", error);
+			ElMessage.error('Failed to save map or build network. Please try again.');
+		}).finally(() => {
+			loadingIndicator.hide();
 		});
 	}
 </script>
