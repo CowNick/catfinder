@@ -215,7 +215,7 @@ export class StreetMap
 			});
 
 			// 将关闭按钮添加到编辑器容器中
-			this._editor.container.appendChild(closeButton);
+			(this._editor.container as HTMLElement).appendChild(closeButton);
 			this._mapView.ui.add(this._editor, "top-right");
 		}
 
@@ -239,6 +239,53 @@ export class StreetMap
 	destroy() {
 		if (this._mapView) {
 			this._mapView.destroy();
+		}
+	}
+
+	async deleteSelectedGraphics(): Promise<void> {
+		if (!this._streetFeatureLayer.streetlayer) {
+			console.error("Street layer is not initialized");
+			throw new Error("Street layer is not initialized");
+		}
+
+		const selectedGraphics = this.getSelectedGraphics();
+		if (selectedGraphics.length === 0) {
+			console.log("No graphics selected for deletion");
+			return;
+		}
+
+		try {
+			console.log("Attempting to delete", selectedGraphics.length, "graphics");
+			const deleteResults = await this._streetFeatureLayer.streetlayer.applyEdits({
+				deleteFeatures: selectedGraphics
+			});
+
+			console.log("Delete results:", deleteResults);
+
+			if (deleteResults.deleteFeatureResults.length > 0) {
+				deleteResults.deleteFeatureResults.forEach((result, index) => {
+					if (result.error) {
+						console.error(`Error deleting feature ${index}:`, result.error);
+					} else {
+						console.log(`Feature ${index} deleted successfully`);
+					}
+				});
+
+				// 从图层中移除已删除的图形
+				selectedGraphics.forEach(graphic => {
+					this._streetFeatureLayer.streetlayer?.remove(graphic);
+				});
+
+				// 清除选择
+				this._selectedGraphics = [];
+
+				console.log("Graphics deleted successfully");
+			} else {
+				console.warn("No features were deleted");
+			}
+		} catch (error) {
+			console.error("Error in deleteSelectedGraphics:", error);
+			throw error; // 重新抛出错误，以便在调用方进行处理
 		}
 	}
 }

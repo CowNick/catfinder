@@ -27,7 +27,7 @@ export class StreetLayer
 				symbol: this.getStreetSymbol()
 			}),
             url: MapUrl.MapEditingStreetUrl,
-            editable: true, // 允许编辑
+            editingEnabled: true, // 允许编辑
         });
 
         map.add(this.streetlayer);

@@ -11,6 +11,7 @@
 	import { onMounted, ref, onUnmounted } from "vue"
 	import { loadingIndicator } from '@/services/LoadingIndicator'
 	import Graphic from '@arcgis/core/Graphic';
+	import { ElMessage } from 'element-plus';
 
 	const mapContainer = ref<HTMLDivElement>();
 	const streetMap = new StreetMap();
@@ -123,6 +124,22 @@
 	onUnmounted(() => {
 		streetMap.destroy(); // 清理地图资源
 	});
+
+	function DeleteMap() {
+		showRightClickMenu.value = false; // 关闭右键菜单
+		
+		loadingIndicator.show(); // 显示加载指示器
+		streetMap.deleteSelectedGraphics().then(() => {
+			console.log("Delete operation completed successfully");
+			// 可能需要刷新地图或更新UI
+		}).catch(error => {
+			console.error("Error during delete operation:", error);
+			// 显示错误消息给用户
+			ElMessage.error('Failed to delete selected features. Please try again.');
+		}).finally(() => {
+			loadingIndicator.hide(); // 隐藏加载指示器
+		});
+	}
 </script>
 <style lang="less" scoped>
 	.map-container
