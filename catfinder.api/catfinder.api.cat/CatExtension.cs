@@ -1,5 +1,7 @@
 ﻿using catfinder.api.cat.Interface;
 using catfinder.api.cat.Service;
+using catfinder.api.picture.Interface;
+using catfinder.api.picture.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace catfinder.api.cat
@@ -10,6 +12,7 @@ namespace catfinder.api.cat
 		{
 			services.AddScoped<ICatService, CatService>();
 			services.AddScoped<ICatPictureService, CatPictureService>();
+			services.AddScoped<IImageStorageService, ImgbbStorageService>();
 		}
 	}
 }

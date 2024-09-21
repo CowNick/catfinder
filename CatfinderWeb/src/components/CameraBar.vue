@@ -5,21 +5,26 @@
 <script setup lang="ts">
 	import { ref, defineEmits } from 'vue';
 	import { getAxiosWrapper } from "@/axios/axios"
+	import geoLocation from "@/services/GeoLocation"
 
-	async function Upload(e)
+	async function Upload(e: any)
 	{
 		let formData = new FormData();
 		formData.append('file', e.currentTarget.files[0]);
-		formData.append('cat', JSON.stringify({ Xcoord: 122.46981757804873, Ycoord: 32.234791846253444 }));
-		let axiosInstance = getAxiosWrapper();
-		let cat = await axiosInstance.postForm('api/CatPictures',
-			formData,
-			{
-				headers: {
-				'Content-Type': 'multipart/form-data'
+		const currentLocation = await geoLocation.WhereAmICoords();
+		if (currentLocation)
+		{
+			formData.append('cat', JSON.stringify({ Xcoord: currentLocation.x, Ycoord: currentLocation.y}));
+			let axiosInstance = getAxiosWrapper();
+			let cat = await axiosInstance.postForm('api/CatPictures',
+				formData,
+				{
+					headers: {
+					'Content-Type': 'multipart/form-data'
+					}
 				}
-			}
-		);
+			);
+		}
 	}
 </script>
 <style lang="less" scoped>

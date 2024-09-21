@@ -4,10 +4,10 @@
 			<el-menu-item index="1" @click="$emit('create')">
 				<span>Create Map</span>
 			</el-menu-item>
-			<el-menu-item index="2" v-if="props.showStreet">
+			<el-menu-item index="2" v-if="props.showStreet" @click="$emit('edit')">
 				<span>Update Map</span>
 			</el-menu-item>
-			<el-menu-item index="3" v-if="props.showStreet">
+			<el-menu-item index="3" v-if="props.showStreet" @click="$emit('delete')">
 				<span>Delete Map</span>
 			</el-menu-item>
 		</el-menu>

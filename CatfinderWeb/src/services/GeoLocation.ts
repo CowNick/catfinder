@@ -6,7 +6,7 @@ import { ElMessage } from 'element-plus'
 
 class GeoLocation
 {
-	async WhereAmI() : Promise<Geometry | undefined>
+	async WhereAmICoords()
 	{
 		let resolveFunc : (location : GeolocationPosition) => void
 		let rejectFunc:  (err: GeolocationPositionError) => void
@@ -40,10 +40,24 @@ class GeoLocation
 			return undefined;
 		}
 
-		const point = new Point({
-			spatialReference: SpatialReference.WGS84,
+		return {
 			y: currentLocation.coords.latitude,
 			x: currentLocation.coords.longitude
+		};
+	}
+
+	async WhereAmI() : Promise<Geometry | undefined>
+	{
+		let coords = await this.WhereAmICoords();
+		if (!coords)
+		{
+			return coords;
+		}
+
+		const point = new Point({
+			spatialReference: SpatialReference.WGS84,
+			y: coords.y,
+			x: coords.x
 		});
 		return geographicToWebMercator(point);
 	}
