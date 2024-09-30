@@ -20,6 +20,7 @@ import FeatureSet from "@arcgis/core/rest/support/FeatureSet"
 import type { RouteStop } from "@/model"
 import { loadingIndicator } from '@/services/LoadingIndicator'
 import * as locator from "@arcgis/core/rest/locator"
+import { LongPressHandler } from './LongPressHandler'
 
 export interface RouteResult {
 	success: boolean;
@@ -34,6 +35,7 @@ export class RoutingMap
 	private _poiFeatureLayer? : FeatureLayer;
 	private readonly _catGraphicLayer = new CatGraphicLayer();
 	private _routeLayer? : GraphicsLayer;
+	private longPressHandler: LongPressHandler | null = null;
 
 	constructor()
 	{
@@ -259,7 +261,7 @@ export class RoutingMap
 		this._catGraphicLayer.initLater(this._map);
 	}
 
-	private async initEvents(onGraphicClicked: (graphics: Graphic[]) => void)
+	private initEvents(onGraphicClicked: (graphics: Graphic[]) => void)
 	{
 		if (this._mapView === undefined)
 		{
@@ -280,6 +282,9 @@ export class RoutingMap
 				}
 			}
 		});
+
+		this.longPressHandler = new LongPressHandler(this._mapView);
+		this.longPressHandler.initLongPressEvent();
 	}
 
 	async clearBothPoiAndCatLayerGraphic()
