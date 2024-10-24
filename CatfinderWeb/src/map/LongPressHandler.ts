@@ -1,6 +1,7 @@
 import { h, render } from 'vue'
 import CatUploadComponent from '@/components/CatUploadComponent.vue'
 import MapView from "@arcgis/core/Views/MapView"
+import Point from '@arcgis/core/geometry/Point';
 
 export class LongPressHandler {
 	private catUploadApp: any = null;
@@ -25,8 +26,8 @@ export class LongPressHandler {
 		this.isLongPress = false;
 		this.longPressTimer = window.setTimeout(() => {
 			this.isLongPress = true;
-			const { x, y } = event;
-			this.showCatUploadMenu(x, y);
+			const {x, y} = event;
+			this.showCatUploadMenu(x, y, this.mapView.toMap(event));
 		}, this.LONG_PRESS_DURATION);
 	}
 
@@ -68,13 +69,13 @@ export class LongPressHandler {
 		}
 	}
 
-	private showCatUploadMenu(x: number, y: number) {
+	private showCatUploadMenu(x:number, y: number,p: Point) {
 		if (!this.catUploadApp) {
 			this.createCatUploadApp();
 		}
 		
 		const { menuX, menuY } = this.calculateMenuPosition(x, y);
-		this.catUploadApp?.exposed?.showMenu({ clientX: menuX, clientY: menuY });
+		this.catUploadApp?.exposed?.showMenu({ clientX: menuX, clientY: menuY, point: p });
 		this.menuVisible = true;
 	}
 
