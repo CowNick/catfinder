@@ -6,7 +6,7 @@
 				<el-dropdown-menu class="menu">
 					<el-dropdown-item @click="$emit('edit')">Edit Map</el-dropdown-item>
 					<el-dropdown-item @click="$emit('save')">Save Map</el-dropdown-item>
-					<el-dropdown-item divided>Update Map</el-dropdown-item>
+					<el-dropdown-item @click="$emit('update')" divided>Update Map</el-dropdown-item> <!-- 添加此行 -->
 				</el-dropdown-menu>
 			</template>
 		</el-dropdown>
@@ -17,9 +17,11 @@
 
 	const emit = defineEmits<{
 		edit: [],
-		save: []
+		save: [],
+		update: []
 	}>()
 </script>
+
 <style lang="less" scoped>
 	.navigation
 	{

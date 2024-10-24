@@ -5,5 +5,6 @@ export class MapUrl
 	static readonly MapEditingStreetUrl = `${(import.meta.env.APP_ARCGIS_SERVER_URL_BASE)}/${MapUrl.CommonRestPath}/MapEditing/FeatureServer/${import.meta.env.APP_LAYER_POI_STREET_ID}`;
 	static readonly NARouteUrl = `${(import.meta.env.APP_ARCGIS_SERVER_URL_BASE)}/${MapUrl.CommonRestPath}/NetworkAnalysis/NAServer/route`;
 	static readonly GeoLocatorUrl = `${(import.meta.env.APP_ARCGIS_SERVER_URL_BASE)}/${MapUrl.CommonRestPath}/CatLocator/GeocodeServer`;
-	static readonly BuildNetworkGPUrl = `${(import.meta.env.APP_ARCGIS_SERVER_URL_BASE)}/${MapUrl.CommonRestPath}/BuildNetwork/GPServer/Build%20Network`;
+	static readonly BuildNetworkGPUrl = `${(import.meta.env.APP_ARCGIS_SERVER_URL_BASE)}/${MapUrl.CommonRestPath}/BuildNetwork/GPServer/Build%20Network/submitJob`;
+	static readonly UpdateMapGPUrl = `${(import.meta.env.APP_ARCGIS_SERVER_URL_BASE)}/${MapUrl.CommonRestPath}/UpdateMap/GPServer/UpdateMap/submitJob`;
 }

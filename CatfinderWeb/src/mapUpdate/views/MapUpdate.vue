@@ -1,5 +1,5 @@
 <template>
-	<EditMenu @edit="OpenMapMenu" @save="SaveMap"></EditMenu>
+	<EditMenu @edit="OpenMapMenu" @save="SaveMap" @update="UploadZipFile"></EditMenu> <!-- 添加 @update 事件 -->
 	<RightClickMenu :show="showRightClickMenu" :showStreet="showRightClickMenuStreet" :x="MenuX" :y="MenuY" @create="CreateMap" @edit="EditMap" @delete="DeleteMap"></RightClickMenu>
 	<div class="map-container" ref="mapContainer" @click="onMapClick" @dblclick="onMapDoubleClick">
 	</div>
@@ -12,6 +12,7 @@
 	import { loadingIndicator } from '@/services/LoadingIndicator'
 	import Graphic from '@arcgis/core/Graphic';
 	import { ElMessage } from 'element-plus';
+	import { getAxiosWrapper } from "@/axios/axios"// 导入 axios 实例
 
 	const mapContainer = ref<HTMLDivElement>();
 	const streetMap = new StreetMap();
@@ -151,6 +152,46 @@
 		}).finally(() => {
 			loadingIndicator.hide();
 		});
+	}
+
+	function UploadZipFile() {
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = '.zip';
+		input.onchange = async (event) => {
+			const file = (event.target as HTMLInputElement).files?.[0];
+			if (file) {
+				try {
+					const filePath = await uploadZipFile(file); // 上传 ZIP 文件并获取路径
+					await streetMap.updateMap(filePath); // 调用更新 GP 服务
+					ElMessage.success('Map updated successfully');
+				} catch (error) {
+					console.error("Error updating map:", error);
+					ElMessage.error('Failed to update map. Please try again.');
+				}
+			}
+		};
+		input.click();
+	}
+
+	async function uploadZipFile(file: File): Promise<string> {
+		const formData = new FormData();
+		formData.append('file', file);
+
+		let axiosInstance = getAxiosWrapper();
+		const response = await axiosInstance.postForm('api/UploadFiles', 
+			formData,
+			{
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			}); // 使用 axiosInstance 上传文件
+
+		if (!response) {
+			throw new Error('Failed to upload ZIP file');
+		}
+
+		return response.data; // 直接返回 response，因为它是文件路径
 	}
 </script>
 <style lang="less" scoped>
