@@ -341,5 +341,23 @@ export class StreetMap
 			throw error;
 		}
 	}
+
+	private async updateMap(filePath: string): Promise<void> {
+		try {
+			const params = {
+				// 根据 GP 服务的要求设置参数
+				sde_path: "D:\\GIS Training\\arcgis\\ArcTutor\\CatTest.sde", 
+				zip_path: filePath
+				//zip_path: "D:\\GIS Training\\FinallyData\\shanghai-latest-free.shp.zip"// 将文件路径作为参数传递
+			};
+
+			await execute(MapUrl.UpdateMapGPUrl, params); // 假设您在 ArcgisUrl.ts 中定义了 UpdateMapGPUrl
+
+			console.log("Update map task completed");
+		} catch (error) {
+			console.error("Error running update map GP:", error);
+			throw error;
+		}
+	}
 }
 
