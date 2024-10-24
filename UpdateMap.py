@@ -6,7 +6,7 @@ import os
 # zip_path = arcpy.GetParameterAsText(1)
 
 sde_path = r"D:\GIS Training\arcgis\ArcTutor\CatTest.sde"
-zip_path = r"D:\GIS Training\FinallyData\shanghai-latest-free.shp.zip"
+zip_path = r"D:\GIS Training\FinallyData\Upload\SimpleZip.zip"
 
 def update_street_table(zip_file_path, sde_path):
     try:
@@ -21,33 +21,38 @@ def update_street_table(zip_file_path, sde_path):
         if not shp_file:
             raise FileNotFoundError("未找到 SHP 文件")
 
-        shp_file_path = os.path.join(extract_path, "gis_osm_railways_free_1.shp")
+        shp_file_path = os.path.join(extract_path, "gis_osm_roads_free_1.shp")
 
         street_path = os.path.join(sde_path, "Transportation", "Streets")
 
-        arcpy.Delete_management(os.path.join(sde_path, "Transportation", "Streets_ND"))
-        arcpy.Delete_management(os.path.join(sde_path, "Transportation", "Streets_ND_Junctions"))
+        try:
+            arcpy.AcceptConnections(sde_path, False)
+            arcpy.DisconnectUser(sde_path, "ALL")
+            arcpy.Delete_management(os.path.join(sde_path, "Transportation", "Streets_ND"))
+            arcpy.Delete_management(os.path.join(sde_path, "Transportation", "Streets_ND_Junctions"))
 
-        # 删除 street 表中的原始数据
-        arcpy.DeleteRows_management(street_path)
+            # 删除 street 表中的原始数据
+            arcpy.DeleteRows_management(street_path)
 
-        # 定义投影转换
-        wgs84_sr = arcpy.SpatialReference(4326)  # WGS84
-        web_mercator_sr = arcpy.SpatialReference(3857)  # Web Mercator
+            # 定义投影转换
+            wgs84_sr = arcpy.SpatialReference(4326)  # WGS84
+            web_mercator_sr = arcpy.SpatialReference(3857)  # Web Mercator
 
-        # 创建临时要素类以存储投影后的数据
-        projected_shp = "in_memory/projected_shp"
+            # 创建临时要素类以存储投影后的数据
+            projected_shp = "in_memory/projected_shp"
 
-        # 投影转换
-        arcpy.Project_management(shp_file_path, projected_shp, web_mercator_sr)
+            # 投影转换
+            arcpy.Project_management(shp_file_path, projected_shp, web_mercator_sr)
 
-        # 追加新的数据
-        arcpy.Append_management(projected_shp, street_path, "NO_TEST")
+            # 追加新的数据
+            arcpy.Append_management(projected_shp, street_path, "NO_TEST")
 
-        # 重新构建网络
-        arcpy.na.CreateNetworkDataset(os.path.join(sde_path, "Transportation"), "Streets_ND", "DBO.Streets", "ELEVATION_FIELDS")
+            # 重新构建网络
+            arcpy.na.CreateNetworkDataset(os.path.join(sde_path, "Transportation"), "Streets_ND", "DBO.Streets", "ELEVATION_FIELDS")
 
-        arcpy.Delete_management(projected_shp)
+            arcpy.Delete_management(projected_shp)
+        finally:
+            arcpy.AcceptConnections(sde_path, True)
     except arcpy.ExecuteError:
         errorLog = arcpy.GetMessages()
         raise SystemError()

@@ -82,7 +82,7 @@ def update_street_table(zip_file_path, sde_path):
         if not shp_file:
             raise FileNotFoundError("未找到 SHP 文件")
 
-        shp_file_path = os.path.join(extract_path, "gis_osm_railways_free_1.shp")
+        shp_file_path = os.path.join(extract_path, "gis_osm_roads_free_1.shp")
 
         street_path = os.path.join(sde_path, "Transportation", "Streets")
 
