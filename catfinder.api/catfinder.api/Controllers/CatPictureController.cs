@@ -52,8 +52,12 @@ namespace catfinder.api.Controllers
 				.Select(t => t.Result)
 				.ToArray();
 
-			var groups = await _catPictureService.UploadAsync(files, catDTO);
-			await CalculateCatPolygon(groups);
+			if (files.Count() > 0) 
+			{
+				var groups = await _catPictureService.UploadAsync(files, catDTO);
+				await CalculateCatPolygon(groups);
+			}
+			
 			return Created();
 		}
 

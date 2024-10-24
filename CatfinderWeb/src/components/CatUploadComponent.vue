@@ -62,6 +62,7 @@ import { Plus } from '@element-plus/icons-vue'
 import Point from '@arcgis/core/geometry/Point';
 import { getAxiosWrapper } from "@/axios/axios"
 import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils'; // Import all named exports
+import { loadingIndicator } from '@/services/LoadingIndicator'
 
 const menuVisible = ref(false)
 const drawerVisible = ref(false)
@@ -132,15 +133,23 @@ const submitPhoto = async () => {
     }
   });
 
+  
   const catDTO = {
     Description: description.value,
-    Xcoord: mapPoint ? webMercatorUtils.lngLatToXY(mapPoint.x, mapPoint.y)[0] : undefined, // Convert to Web Mercator
-    Ycoord: mapPoint ? webMercatorUtils.lngLatToXY(mapPoint.x, mapPoint.y)[1] : undefined, // Convert to Web Mercator
+    Xcoord: 0,
+    Ycoord:0,
  };
+ if (mapPoint)
+ {
+	const geoPoint = webMercatorUtils.webMercatorToGeographic(mapPoint) as Point
+	catDTO.Xcoord = geoPoint.x
+	catDTO.Ycoord = geoPoint.y	
+ }
 
   formData.append('cat', JSON.stringify(catDTO));
 
   try {
+	loadingIndicator.show();
     const axiosInstance = getAxiosWrapper();
     const response = await axiosInstance.post('api/CatPictures', formData, {
       headers: {
@@ -149,8 +158,7 @@ const submitPhoto = async () => {
     });
 
     if (response.status === 201) {
-      console.log('提交照片成功', response.data);
-      // Handle success (e.g., show a success message, reset form, etc.)
+		ElMessage.success('提交照片成功');
     }
   } catch (error) {
     console.error('提交照片失败', error);
@@ -159,6 +167,7 @@ const submitPhoto = async () => {
     drawerVisible.value = false;
     fileList.value = [];
     description.value = '';
+	loadingIndicator.hide();
   }
 }
 

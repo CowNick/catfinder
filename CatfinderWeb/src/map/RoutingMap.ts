@@ -97,7 +97,7 @@ export class RoutingMap
 			preserveFirstStop: true,
 			preserveLastStop: true,
 			outSpatialReference: SpatialReference.WebMercator,
-			directionsTimeAttribute: 'Time',
+			directionsTimeAttribute: 'Length',
 			directionsLanguage: "zh-CN",
 			directionsLengthUnits: 'kilometers',
 			restrictUTurns: "allow-backtrack",
