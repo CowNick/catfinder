@@ -102,6 +102,7 @@ namespace catfinder.api.Controllers
 
 		private async Task GenerateCatBoundary(List<CatPicture> catPictures, int catId)
 		{
+			catPictures.Add(catPictures.First());
 			var text = string.Join(',', catPictures.Select(r =>
 			{
 				var xy = ConvertWGS84ToSphericalMercator((double)r.Xcoord, (double)r.Ycoord);

@@ -70,7 +70,7 @@ namespace catfinder.api.cat.Service
 			return urlList;
 		}
 
-		private const int _maxDistance = 15;
+		private const int _maxDistance = 1;
 
 		public async Task<CatPictureDTO[]> SearchAsync(string path)
 		{

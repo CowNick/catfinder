@@ -157,7 +157,7 @@ const submitPhoto = async () => {
       },
     });
 
-    if (response.status === 201) {
+    if (response.status === 204) {
 		ElMessage.success('提交照片成功');
     }
   } catch (error) {
@@ -193,6 +193,7 @@ defineExpose({ showMenu, hideMenu })
 }
 
 .submit-area {
+  padding-top:5px;
   border-top: 1px solid #e0e0e0;
   text-align: right;
 }

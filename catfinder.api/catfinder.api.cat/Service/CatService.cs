@@ -34,6 +34,7 @@ namespace catfinder.api.cat.Service
 			using var db = new CatDBContext();
 			var cats = await db.Cats.Include(r => r.CatAliases).Include(r => r.CatPictures).Where(
 				r => r.Name.Contains(text) ||
+				r.Description.Contains(text) ||
 				(r.Type != null && r.Type.Contains(text)) ||
 				(r.Tags != null && r.Tags.Contains(text)) ||
 				r.CatAliases.Any(o => o.Alias.Contains(text))).ToArrayAsync();
